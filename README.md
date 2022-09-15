@@ -2,13 +2,13 @@
 
 Click the shortcut button or press `Alt + I` to get the module inserter. Activate with a module in hand to Use `Shift + Scroll` to cycle between modules:
 
-![Cycle modules](cycle-modules.mp4)
+![Cycle modules](https://github.com/tburrows13/ModuleInserterSimplified/raw/master/resources/cycle-modules.mp4)
 
 Click and drag the mouse to fill the selected machines with modules:
-![Insert all](insert-all.mp4)
+![Fill all with modules](https://github.com/tburrows13/ModuleInserterSimplified/raw/master/resources/insert-all.mp4)
 
 Right-click and drag the mouse to insert a single module into each machine:
-![Insert single](insert-single.mp4)
+![Add single module to all](https://github.com/tburrows13/ModuleInserterSimplified/raw/master/resources/insert-single.mp4)
 
 Shift-click and drag the mouse to clear module requests.
 Use _Remove modules_ to remove modules.
