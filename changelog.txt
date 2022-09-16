@@ -1,10 +1,13 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.1
-Date: ???
+Date: 16 September 2022
+  Features:
+    - Added additional "Remove modules" into the module cycle when Space Exploration is installed
+    - Full compatibility with Ghost Warnings
   Bugfixes:
     - Fixed crash on load with certain mods
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.0
-Date: 16 September 2022
+Date: 15 September 2022
   Features:
     - Initial release
