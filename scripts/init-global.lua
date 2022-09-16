@@ -112,6 +112,8 @@ local function generate_global_data()
   global.allowed_with_recipe = allowed_with_recipe
   global.allowed_in_entity = allowed_in_entity
 
+  global.players_shift_scroll_warning = global.players_shift_scroll_warning or {}
+
   global.translations = {}
   for _, player in pairs(game.is_multiplayer() and game.connected_players or game.players) do
     request_translations(player)

@@ -1,3 +1,11 @@
+local function control_conflict_warn(player)
+  local previous_warnings = global.players_shift_scroll_warning
+  if not previous_warnings[player.index] then
+    player.print({"mis.control-conflict-warn"})
+    previous_warnings[player.index] = true
+  end
+end
+
 local function cycle_module(player, direction)
   local selection_tool = player.cursor_stack
   if selection_tool and selection_tool.valid_for_read then
@@ -24,6 +32,8 @@ local function cycle_module(player, direction)
       local label = global.translations[player.index][next_selection_tool]
       selection_tool.label = label and label or next_module
       global.players_last_module[player.index] = next_module
+
+      control_conflict_warn(player)
     end
   end
 end
