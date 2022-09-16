@@ -83,13 +83,14 @@ local function generate_global_data()
   end
 
 
-  local i = 1
+  local tier = 1
   local module_list = {}
   local in_module_list = {}
+  local se_installed = game.active_mods["space-exploration"]
   while true do
     local added = false
     for _, tier_module_list in pairs(module_tiers) do
-      local name = tier_module_list[i]
+      local name = tier_module_list[tier]
       if name then
         added = true
         table.insert(module_list, name)
@@ -97,7 +98,9 @@ local function generate_global_data()
       end
     end
     if not added then break end
-    i = i + 1
+    if se_installed and tier == 3 then table.insert(module_list, "empty-2") end
+    if se_installed and tier == 6 then table.insert(module_list, "empty-3") end
+    tier = tier + 1
   end
 
   table.insert(module_list, "empty")  -- Fake module to represent removing modules

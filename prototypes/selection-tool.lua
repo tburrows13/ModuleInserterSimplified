@@ -40,6 +40,7 @@ end
 
 local selection_tool = table.deepcopy(selection_tool_template)
 selection_tool.name = "mis-insert-empty"
+selection_tool.localised_name = {"item-name.mis-insert-empty"}
 selection_tool.icon = "__core__/graphics/cancel.png"
 selection_tool.icon_size = 64
 selection_tool.icon_mipmaps = 1
@@ -49,3 +50,10 @@ selection_tool.selection_color = { r = 1, g = 0, b = 0 }
 selection_tool.reverse_selection_color = { r = 1, g = 0, b = 0 }
 
 data:extend{selection_tool}
+
+-- For SE
+local selection_tool_2 = table.deepcopy(selection_tool)
+selection_tool_2.name = "mis-insert-empty-2"
+local selection_tool_3 = table.deepcopy(selection_tool)
+selection_tool_3.name = "mis-insert-empty-3"
+data:extend{selection_tool_2, selection_tool_3}
