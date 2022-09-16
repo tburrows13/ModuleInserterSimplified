@@ -56,6 +56,7 @@ local function insert_into_entity(module, entity, player, surface)
       if module == "empty" then
         entity.item_requests = {}
       else
+        script.raise_event(on_module_inserted, {modules = {[module] = space_in_inv}, player = player, entity = entity})
         entity.item_requests = {[module] = space_in_inv}
       end
     end
@@ -86,6 +87,7 @@ local function insert_into_entity(module, entity, player, surface)
   if count == 0 or module == "empty" then
     return
   end
+  script.raise_event(on_module_inserted, {modules = {[module] = count}, player = player, entity = entity})
   surface.create_entity{
     name = "item-request-proxy",
     position = entity.position,
@@ -128,7 +130,7 @@ local function insert_single_into_entity(module, entity, player, surface, allowe
     local requests = entity.item_requests
 
     if requests[module] and requests[module] >= space_in_inv then
-      -- Already full with the correct module
+      -- Already full with the correct module, so cut down to what actually fits
       entity.item_requests = {[module] = space_in_inv}
       return
     end
@@ -155,8 +157,7 @@ local function insert_single_into_entity(module, entity, player, surface, allowe
       end
     end
     requests[module] = requests[module] and requests[module] + 1 or 1
-    entity.item_requests = requests
-
+    script.raise_event(on_module_inserted, {modules = {[module] = 1}, player = player, entity = entity})
     entity.item_requests = requests
     return
   end
@@ -239,8 +240,10 @@ local function insert_single_into_entity(module, entity, player, surface, allowe
   -- Add single request
   if request_proxy then
     requests[module] = requests[module] and requests[module] + 1 or 1
+    script.raise_event(on_module_inserted, {modules = {[module] = 1}, player = player, entity = entity})
     request_proxy.item_requests = requests
   else
+    script.raise_event(on_module_inserted, {modules = {[module] = 1}, player = player, entity = entity})
     surface.create_entity{
       name = "item-request-proxy",
       position = entity.position,
