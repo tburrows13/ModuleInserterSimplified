@@ -2,7 +2,7 @@ local function request_translations(player)
   local selection_tools = game.get_filtered_item_prototypes({{filter = "type", type = "selection-tool"}})
   for name, selection_tool in pairs(selection_tools) do
     if name:sub(1, 11) == "mis-insert-" and name:sub(12, 20) ~= "ee-super-" then
-      player.request_translation(selection_tool.localised_name)
+      player.request_translation({"", "mis", name, "|", selection_tool.localised_name})
     end
   end
   player.request_translation({"selection-tool.mis-insert-empty"})
@@ -14,12 +14,13 @@ script.on_event(defines.events.on_string_translated,
     local player_index = event.player_index
     local translations = global.translations
     translations[player_index] = translations[player_index] or {}
-    if event.localised_string[1] == "selection-tool.mis-insert-empty" then
-      translations[player_index]["mis-insert-empty"] = event.result
-    elseif event.localised_string[1] == "mis-tool.insert-module" then
-      local module_name = event.localised_string[2][1]:sub(11)
-      translations[player_index]["mis-insert-" .. module_name] = event.result
-    end
+
+    local input = event.localised_string
+    if input[2] ~= "mis" then return end
+    local output = event.result
+    local divider_location = output:find("|")
+    local localised_name = output:sub(divider_location + 1)
+    translations[player_index][input[3]] = localised_name
   end
 )
 
@@ -107,7 +108,6 @@ local function generate_global_data()
   global.in_module_list = in_module_list
   global.allowed_with_recipe = allowed_with_recipe
   global.allowed_in_entity = allowed_in_entity
-  global.players_last_module = {}  -- Remove after 1.0
 
   global.translations = {}
   for _, player in pairs(game.is_multiplayer() and game.connected_players or game.players) do
