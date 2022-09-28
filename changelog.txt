@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.0.2
+Date: 28 September 2022
+  Bugfixes:
+    - Fixed crash when using the additional "Remove modules" tools (added when Space Exploration is installed)
+---------------------------------------------------------------------------------------------------
 Version: 1.0.1
 Date: 16 September 2022
   Features:
