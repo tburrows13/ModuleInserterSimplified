@@ -53,7 +53,7 @@ function Gui.build(player)
             {
               type = "checkbox",
               state = true,
-              caption = {"mis-config-gui.automatically-enable"},
+              caption = { "mis-config-gui.automatically-enable" },
               ref = { "automatically_enable" },
               actions = {
                 on_checked_state_changed = { gui = "config", action = "checkbox_toggled" }
@@ -62,16 +62,46 @@ function Gui.build(player)
             {
               type = "checkbox",
               state = false,
-              caption = {"mis-config-gui.show-cheat-modules"},
+              caption = { "mis-config-gui.show-cheat-modules" },
               ref = { "show_cheat_modules" },
               actions = {
                 on_checked_state_changed = { gui = "config", action = "checkbox_toggled" }
               }
             },
-            -- Automatically show X [dropdown?] newest per tier
-            -- Show empty every X [dropdown?] tiers
+            {
+              type = "flow",
+              children = {
+                {
+                  type = "label",
+                  caption = "Automatically hide modules more than X tiers old"
+                },
+                {
+                  type = "drop-down",
+                  items = { 1, 2, 3 },
+                }
+              }
+            },
+            {
+              type = "flow",
+              children = {
+                {
+                  type = "label",
+                  caption = "[item=mis-insert-empty-1] every X tiers",
+                },
+                {
+                  type = "drop-down",
+                  items = { 1, 2, 3 },
+                  selected_index = 3,
+                }
+              }
+            },
             -- [x] | M Productivity 1 [x] | M Efficiency 1 [x] | M Speed 1 [x]
             -- [ ] | M Productivity 2 [x] | M Efficiency 2 [ ] | M Speed 2 [x]
+            {
+              type = "table",
+              ref = { "module_table" },
+              column_count = 4,
+            }
           }
         },
       }
