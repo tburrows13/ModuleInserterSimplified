@@ -103,7 +103,7 @@ local function generate_global_data()
     tier = tier + 1
   end
 
-  table.insert(module_list, "empty")  -- Fake module to represent removing modules
+  table.insert(module_list, "empty-1")  -- Fake module to represent removing modules
 
   log(serpent.block(module_list))
 
