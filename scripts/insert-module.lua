@@ -79,7 +79,7 @@ local function insert_into_entity(module, entity, player, surface)
       if module_stack.name == module then
         count = count - 1
       else
-        local spilled = surface.spill_item_stack(entity.position, module_stack, true, player.force, false)
+        local spilled = surface.spill_item_stack(entity.bounding_box.left_top, module_stack, true, player.force, false)
         if spilled[1] then module_stack.clear() end
       end
     end
@@ -112,7 +112,7 @@ local function insert_single_into_entity(module, entity, player, surface, allowe
       local module_stack = module_inventory[i]
       if module_stack and module_stack.valid_for_read then
         if module_stack.name ~= module then
-          local spilled = surface.spill_item_stack(entity.position, module_stack, true, player.force, false)
+          local spilled = surface.spill_item_stack(entity.bounding_box.left_top, module_stack, true, player.force, false)
           if spilled[1] then
             module_stack.clear()
             break
@@ -183,7 +183,7 @@ local function insert_single_into_entity(module, entity, player, surface, allowe
       local module_stack = module_inventory[i]
       if module_stack and module_stack.valid_for_read then
         if module_stack.name ~= module then
-          local spilled = surface.spill_item_stack(entity.position, module_stack, true, player.force, false)
+          local spilled = surface.spill_item_stack(entity.bounding_box.left_top, module_stack, true, player.force, false)
           if spilled[1] then module_stack.clear()
             space_in_inv = 1
             break
@@ -221,7 +221,7 @@ local function insert_single_into_entity(module, entity, player, surface, allowe
         local module_stack = module_inventory[i]
         if module_stack and module_stack.valid_for_read then
           if module_stack.name ~= module then
-            local spilled = surface.spill_item_stack(entity.position, module_stack, true, player.force, false)
+            local spilled = surface.spill_item_stack(entity.bounding_box.left_top, module_stack, true, player.force, false)
             if spilled[1] then
               module_stack.clear()
               space_in_inv = space_in_inv + 1
