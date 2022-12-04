@@ -11,20 +11,24 @@ local selection_tool_template = {
   stack_size = 1,
   selection_color = { r = 0, g = 1, b = 0 },
   alt_selection_color = { r = 1, g = 0, b = 0 },
-  reverse_selection_color = { r = 0.2, g = 0.7, b = 0.4 },
-  alt_reverse_selection_color = { r = 1, g = 0.4, b = 0.4 },
+  reverse_selection_color = { r = 0.2, g = 0.8, b = 0.3 },
+  alt_reverse_selection_color = { r = 1, g = 0.3, b = 0.2 },
   selection_mode = {"same-force", "any-entity"},
   alt_selection_mode = {"same-force", "any-entity"},
   reverse_selection_mode = {"same-force", "any-entity"},
+  alt_reverse_selection_mode = {"same-force", "any-entity"},
   selection_cursor_box_type = "copy",  -- Green
   alt_selection_cursor_box_type = "not-allowed",  -- Red
   reverse_selection_cursor_box_type = "copy",  -- Green
+  alt_reverse_selection_cursor_box_type = "not-allowed",  -- Red
   entity_type_filters = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"},--, "item-request-proxy"},
   entity_filter_mode = "whitelist",
   alt_entity_type_filters = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"},--, "item-request-proxy"},
   alt_entity_filter_mode = "whitelist",
   reverse_entity_type_filters = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"},--, "item-request-proxy"},
   reverse_entity_filter_mode = "whitelist",
+  alt_reverse_entity_type_filters = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"},--, "item-request-proxy"},
+  alt_reverse_entity_filter_mode = "whitelist",
 }
 
 local module_tiers = {}
@@ -47,9 +51,13 @@ empty_selection_tool_template.icon = "__core__/graphics/cancel.png"
 empty_selection_tool_template.icon_size = 64
 empty_selection_tool_template.icon_mipmaps = 1
 empty_selection_tool_template.selection_cursor_box_type = "not-allowed"  -- Red
-empty_selection_tool_template.alt_selection_cursor_box_type = "not-allowed"
+empty_selection_tool_template.reverse_selection_cursor_box_type = "not-allowed"
 empty_selection_tool_template.selection_color = { r = 1, g = 0, b = 0 }
-empty_selection_tool_template.reverse_selection_color = { r = 1, g = 0, b = 0 }
+empty_selection_tool_template.reverse_selection_color = { r = 1, g = 0.3, b = 0.2 }
+empty_selection_tool_template.alt_selection_color = { r = 0, g = 0, b = 0, a = 0 }
+empty_selection_tool_template.alt_reverse_selection_color = { r = 0, g = 0, b = 0, a = 0 }
+empty_selection_tool_template.alt_selection_mode = {"nothing"}
+empty_selection_tool_template.alt_reverse_selection_mode = {"nothing"}
 
 -- Create one "empty" tool per module tier
 for i = 1, table_size(module_tiers) do

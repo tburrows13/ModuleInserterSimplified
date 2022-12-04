@@ -6,7 +6,7 @@
   "homepage": "https://discord.gg/pkJc4v9nfT",
   "description": "Easy-to-use tool for inserting and upgrading modules in machines using construction robots.\nAlternative to Module Inserter, without any configuration GUI required. Can be installed alongside Module Inserter (Extended).",
   "factorio_version": "1.1",
-  "dependencies": ["base"],
+  "dependencies": ["base >= 1.1.72"],
   "package": {
     "ignore": ["resources/*", "scenarios/*"]
   }

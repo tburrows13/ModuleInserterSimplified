@@ -291,6 +291,32 @@ script.on_event({defines.events.on_player_alt_selected_area},
   end
 )
 
+script.on_event({defines.events.on_player_alt_reverse_selected_area},
+  function(event)
+    local selection_tool = event.item
+    local prefix = selection_tool:sub(1, 11)
+    if prefix == "mis-insert-" then
+      for _, entity in pairs(event.entities) do
+        request_proxy = entity.surface.find_entity("item-request-proxy", entity.position)
+        if request_proxy then
+          -- Remove one request
+          local requests = request_proxy.item_requests
+          local item, count = next(requests)
+          if item and count > 0 then
+            if count > 1 then
+              requests[item] = count - 1
+            else
+              requests[item] = nil
+            end
+            request_proxy.item_requests = requests
+          end
+        end
+      end
+    end
+  end
+)
+
+
 script.on_event({defines.events.on_lua_shortcut, "mis-give-module-inserter"},
   function(event)
     if event.prototype_name and event.prototype_name ~= "mis-give-module-inserter" then return end
