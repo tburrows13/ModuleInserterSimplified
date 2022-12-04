@@ -1,3 +1,15 @@
+script.on_event(defines.events.on_entity_destroyed,
+  function(event)
+    local entity = global.proxy_targets[event.registration_number]
+    if not entity then return end
+    global.proxy_targets[event.registration_number] = nil
+
+    local module_inventory = entity.get_module_inventory()
+    if not module_inventory then return end
+    module_inventory.sort_and_merge()
+  end
+)
+
 local function get_property(entity, property)
   if entity.name == "entity-ghost" then
     return entity["ghost_" .. property]
@@ -88,7 +100,7 @@ local function insert_into_entity(module, entity, player, surface)
     return
   end
   script.raise_event(on_module_inserted, {modules = {[module] = count}, player = player, entity = entity})
-  surface.create_entity{
+  request_proxy = surface.create_entity{
     name = "item-request-proxy",
     position = entity.position,
     force = entity.force,
@@ -97,6 +109,10 @@ local function insert_into_entity(module, entity, player, surface)
     modules = {[module] = count},
     raise_built = true
   }
+  if request_proxy then
+    global.proxy_targets[script.register_on_entity_destroyed(request_proxy)] = entity
+  end
+
 end
 
 local function insert_single_into_entity(module, entity, player, surface, allowed_with_recipe)
@@ -244,7 +260,7 @@ local function insert_single_into_entity(module, entity, player, surface, allowe
     request_proxy.item_requests = requests
   else
     script.raise_event(on_module_inserted, {modules = {[module] = 1}, player = player, entity = entity})
-    surface.create_entity{
+    request_proxy = surface.create_entity{
       name = "item-request-proxy",
       position = entity.position,
       force = entity.force,
@@ -253,6 +269,9 @@ local function insert_single_into_entity(module, entity, player, surface, allowe
       modules = {[module] = 1},
       raise_built = true
     }
+    if request_proxy then
+      global.proxy_targets[script.register_on_entity_destroyed(request_proxy)] = entity
+    end
   end
 end
 

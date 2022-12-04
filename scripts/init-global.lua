@@ -114,6 +114,7 @@ local function generate_global_data()
 
   global.players_shift_scroll_warning = global.players_shift_scroll_warning or {}
   global.player_data = global.player_data or {}
+  global.proxy_targets = global.proxy_targets or {}
 
   global.translations = {}
   for _, player in pairs(game.is_multiplayer() and game.connected_players or game.players) do
@@ -125,6 +126,7 @@ script.on_init(
   function()
     generate_global_data()
     global.players_last_module = {}
+    global.proxy_targets = {}
   end
 )
 script.on_configuration_changed(generate_global_data)
