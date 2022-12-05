@@ -1,26 +1,33 @@
 local function request_translations(player)
   local selection_tools = game.get_filtered_item_prototypes({{filter = "type", type = "selection-tool"}})
+  local translations = {}
+  local translation_names = {}
   for name, selection_tool in pairs(selection_tools) do
     if name:sub(1, 11) == "mis-insert-" and name:sub(12, 20) ~= "ee-super-" then
-      player.request_translation({"", "mis", name, "|", selection_tool.localised_name})
+      table.insert(translation_names, name)
+      table.insert(translations, selection_tool.localised_name)
     end
   end
-  player.request_translation({"selection-tool.mis-insert-empty"})
+  local request_ids = player.request_translations(translations)
+
+  local translation_requests = {}
+  for i, request_id in pairs(request_ids) do
+    translation_requests[request_id] = translation_names[i]
+  end
+  global.translation_requests[player.index] = translation_requests
 end
 
 script.on_event(defines.events.on_string_translated,
   function(event)
     if not event.translated then return end
     local player_index = event.player_index
+    local translation_requests = global.translation_requests[player_index]
+    if not translation_requests or not translation_requests[event.id] then return end
+    local name = translation_requests[event.id]
+
     local translations = global.translations
     translations[player_index] = translations[player_index] or {}
-
-    local input = event.localised_string
-    if input[2] ~= "mis" then return end
-    local output = event.result
-    local divider_location = output:find("|")
-    local localised_name = output:sub(divider_location + 1)
-    translations[player_index][input[3]] = localised_name
+    translations[player_index][name] = event.result
   end
 )
 
@@ -117,6 +124,7 @@ local function generate_global_data()
   global.proxy_targets = global.proxy_targets or {}
 
   global.translations = {}
+  global.translation_requests = {}
   for _, player in pairs(game.is_multiplayer() and game.connected_players or game.players) do
     request_translations(player)
   end
