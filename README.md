@@ -13,6 +13,7 @@ Right-click and drag the mouse to insert a single module into each machine:
 ![Add single module to all](https://github.com/tburrows13/ModuleInserterSimplified/raw/master/resources/insert-single.mp4)
 
 Shift-click and drag the mouse to clear module requests.
+Shift-right-click and drag the mouse to remove one module request per machine.
 Use _Remove modules_ to remove all modules with left-click, and one module per machine with right-click.
 
 -----
