@@ -47,8 +47,7 @@ function Gui.build_module_table()
 end
 
 function Gui.build(player)
-  local elems = {}
-  gui.add(player.gui.screen, {
+  local elems = gui.add(player.gui.screen, {
     {
       type = "frame",
       name = "mis_frame",
@@ -100,15 +99,6 @@ function Gui.build(player)
               }
             },
             {
-              type = "checkbox",
-              name = "mis_show_cheat_modules",
-              state = false,
-              caption = { "mis-config-gui.show-cheat-modules" },
-              actions = {
-                on_checked_state_changed = { gui = "config", action = "checkbox_toggled" }
-              }
-            },
-            {
               type = "flow",
               children = {
                 {
@@ -140,7 +130,7 @@ function Gui.build(player)
         },
       }
     }
-  }, elems)
+  })
 
   local player_data = {}
   elems.mis_frame.force_auto_center()
@@ -184,6 +174,8 @@ gui.add_handlers(Gui,
     handler(player, player_data)
   end
 )
+
+gui.handle_events()
 
 script.on_event(defines.events.on_gui_closed,
   function(event)
