@@ -90,7 +90,7 @@ local function generate_global_data()
       module_tier = tonumber(name:sub(i+1)) or 1  -- Don't use module.tier because Nullius starts at 0
     end
     local tier_list = module_tiers[module_tier] or {}
-    table.insert(tier_list, {name = name, type = module_type, tier = module_tier, enabled = true})
+    table.insert(tier_list, {name = name, type = module_type, tier = module_tier, enabled = true, localised_name = module.localised_name})
     module_tiers[module_tier] = tier_list
 
     -- Compute limitations for each module
@@ -101,7 +101,7 @@ local function generate_global_data()
 
   -- Add mis-empty to each tier
   for tier, tier_list in pairs(module_tiers) do
-    table.insert(tier_list, {name = "empty-" .. tier, type = "empty", tier = tier, enabled = true})
+    table.insert(tier_list, {name = "empty-" .. tier, type = "empty", tier = tier, enabled = true, localised_name = {"item-name.mis-insert-empty"}})
   end
 
   -- Flatten module_tiers in global.modules
@@ -116,6 +116,8 @@ local function generate_global_data()
   for i, module in pairs(global.modules) do
     global.modules_by_name[module.name] = i
   end
+
+  global.modules_by_tier = module_tiers
 
   log(serpent.block(global.modules))
   log(serpent.block(global.modules_by_name))

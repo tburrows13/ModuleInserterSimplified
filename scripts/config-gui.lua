@@ -2,6 +2,50 @@ local gui = require("__ModuleInserterSimplified__.scripts.flib-gui")
 
 local Gui = {}
 
+function Gui.build_module_table()
+  -- [x] | M Productivity 1 [x] | M Efficiency 1 [x] | M Speed 1 [x]
+  -- [ ] | M Productivity 2 [x] | M Efficiency 2 [ ] | M Speed 2 [x]
+  -- Get max tier
+  local column_count = 0
+  for _, tier_list in pairs(global.modules_by_tier) do
+    column_count = math.max(column_count, #tier_list - 1) -- -1 because we don't show the empty
+  end
+
+  local module_table = {
+    type = "table",
+    name = "mis_module_table",
+    column_count = column_count,
+    children = {}
+  }
+
+  for _, tier_list in pairs(global.modules_by_tier) do
+    for i = 1, column_count do
+      local module = tier_list[i]
+      if module and module.type ~= "empty" then
+        table.insert(module_table.children, {
+          type = "checkbox",
+          --name = "mis_module_" .. module.name,
+          state = module.enabled,
+          caption = module.localised_name,
+          actions = {
+            on_checked_state_changed = { gui = "config", action = "checkbox_toggled" }
+          },
+          --[[children = {
+            {
+              type = "sprite",
+              sprite = "item/" .. module.name,
+            }
+          }]]
+        })
+      else
+        --table.insert(module_table.children, { type = "empty-widget" })
+        table.insert(module_table.children, { type = "label", caption = "Empty" })
+      end
+    end
+  end
+  return module_table
+end
+
 function Gui.build(player)
   local elems = {}
   gui.add(player.gui.screen, {
@@ -91,13 +135,7 @@ function Gui.build(player)
                 }
               }
             },
-            -- [x] | M Productivity 1 [x] | M Efficiency 1 [x] | M Speed 1 [x]
-            -- [ ] | M Productivity 2 [x] | M Efficiency 2 [ ] | M Speed 2 [x]
-            {
-              type = "table",
-              name = "mis_module_table",
-              column_count = 4,
-            }
+            Gui.build_module_table()
           }
         },
       }
