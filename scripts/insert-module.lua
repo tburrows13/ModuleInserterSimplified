@@ -340,7 +340,7 @@ script.on_event({defines.events.on_lua_shortcut, "mis-give-module-inserter"},
   function(event)
     if event.prototype_name and event.prototype_name ~= "mis-give-module-inserter" then return end
     local player = game.get_player(event.player_index)
-    Gui.toggle(player, global.player_data[event.player_index])
+    --Gui.toggle(player, global.player_data[event.player_index])
     local cursor_stack = player.cursor_stack
     local next_module
     if cursor_stack and cursor_stack.valid_for_read then
@@ -354,11 +354,11 @@ script.on_event({defines.events.on_lua_shortcut, "mis-give-module-inserter"},
     end
     local cleared = player.clear_cursor()
     if cleared then
-      if not (next_module and global.in_module_list[next_module]) then
+      if not (next_module and global.modules_by_name[next_module]) then
         next_module = global.players_last_module[event.player_index]  -- Get selection tool from last used selection tool
       end
       if not next_module or not game.item_prototypes[next_module] then
-        next_module = global.module_list[1]
+        next_module = global.modules[1].name  -- TODO: skip enabled modules?
       end
       local next_selection_tool = "mis-insert-" .. next_module
       cursor_stack.set_stack(next_selection_tool)

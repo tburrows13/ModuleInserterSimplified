@@ -6,32 +6,41 @@ local function control_conflict_warn(player)
   end
 end
 
+local function get_next_index(index, modules_length)
+  local next_index = index + 1
+  if next_index > modules_length then
+    next_index = next_index - modules_length
+  elseif next_index < 1 then
+    next_index = next_index + modules_length
+  end
+  return next_index
+end
+
 local function cycle_module(player, direction)
   local selection_tool = player.cursor_stack
   if selection_tool and selection_tool.valid_for_read then
     if selection_tool.name:sub(1, 10) == "mis-insert" then
       local prefix = selection_tool.name:sub(1, 11)
       local item = selection_tool.name:sub(12)
-      local module_list = global.module_list
-      local module_list_length = #module_list
-      local next_index
-      for i, module_name in pairs(module_list) do
-        if module_name == item then
-          next_index = i + direction
-        end
-      end
-      if next_index > module_list_length then
-        next_index = next_index - module_list_length
-      elseif next_index < 1 then
-        next_index = next_index + module_list_length
-      end
+      local modules = global.modules
+      local modules_length = #modules
+      local first_index = global.modules_by_name[item]
+      local next_index = first_index
 
-      local next_module = module_list[next_index]
-      local next_selection_tool = prefix .. next_module
+      local next_module
+      repeat
+        next_index = get_next_index(next_index, modules_length)
+        next_module = modules[next_index]
+      until next_module.enabled or first_index == next_index
+
+      if not next_module.enabled then return end  -- No other modules to cycle to
+
+      local next_module_name = next_module.name
+      local next_selection_tool = prefix .. next_module_name
       selection_tool.set_stack(next_selection_tool)
       local label = global.translations[player.index][next_selection_tool]
-      selection_tool.label = label and label or next_module
-      global.players_last_module[player.index] = next_module
+      selection_tool.label = label and label or next_module_name
+      global.players_last_module[player.index] = next_module_name
 
       control_conflict_warn(player)
     end
