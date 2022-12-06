@@ -24,12 +24,10 @@ function Gui.build_module_table()
       if module and module.type ~= "empty" then
         table.insert(module_table.children, {
           type = "checkbox",
-          --name = "mis_module_" .. module.name,
           state = module.enabled,
           caption = module.localised_name,
-          actions = {
-            on_checked_state_changed = { gui = "config", action = "checkbox_toggled" }
-          },
+          tags = { name = module.name },
+          handler = { [defines.events.on_gui_checked_state_changed] = Gui.module_toggled },
           --[[children = {
             {
               type = "sprite",
@@ -54,9 +52,7 @@ function Gui.build(player)
       direction = "vertical",
       visible = true,
       style_mods = { maximal_height = 800 },
-      actions = {
-        on_closed = { gui = "config", action = "close" },
-      },
+      handler = { [defines.events.on_gui_closed] = Gui.close },
       children = {
         {
           type = "flow",
@@ -156,34 +152,24 @@ function Gui.close(player, player_data)
   if player.opened == elems.mis_frame then
     player.opened = nil
   end
-  --Gui.destroy(player, player_data)
+  elems.mis_frame.destroy()
 end
 
-function Gui.toggle(player, player_data)
-  if player_data and player_data.elems.mis_frame.valid and player_data.elems.mis_frame.visible then
-    Gui.close(player, player_data)
-  else
-    Gui.open(player, player_data)
-  end
+function Gui.module_toggled(player, player_data, event)
+  local module_name = event.element.tags.name
+  local module = global.modules_by_name[module_name]
+  module.enabled = event.element.state
+  Config.handle_empties()
 end
 
 gui.add_handlers(Gui,
   function(event, handler)
     local player = game.get_player(event.player_index)
     local player_data = global.player_data[event.player_index]
-    handler(player, player_data)
+    handler(player, player_data, event)
   end
 )
 
 gui.handle_events()
-
-script.on_event(defines.events.on_gui_closed,
-  function(event)
-    if event.element and event.element.name == "mis_frame" then
-      local player = game.get_player(event.player_index)
-      Gui.close(player, global.player_data[event.player_index])
-    end
-  end
-)
 
 return Gui
