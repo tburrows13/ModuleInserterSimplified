@@ -6,8 +6,8 @@ local function control_conflict_warn(player)
   end
 end
 
-local function get_next_index(index, modules_length)
-  local next_index = index + 1
+local function get_next_index(index, direction, modules_length)
+  local next_index = index + direction
   if next_index > modules_length then
     next_index = next_index - modules_length
   elseif next_index < 1 then
@@ -29,7 +29,7 @@ local function cycle_module(player, direction)
 
       local next_module
       repeat
-        next_index = get_next_index(next_index, modules_length)
+        next_index = get_next_index(next_index, direction, modules_length)
         next_module = modules[next_index]
       until next_module.enabled or first_index == next_index
 
