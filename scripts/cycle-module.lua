@@ -24,7 +24,7 @@ local function cycle_module(player, direction)
       local item = selection_tool.name:sub(12)
       local modules = global.modules
       local modules_length = #modules
-      local first_index = global.modules_by_name[item]
+      local first_index = global.modules_by_name[item].index
       local next_index = first_index
 
       local next_module

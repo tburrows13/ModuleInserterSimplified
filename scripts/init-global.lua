@@ -73,13 +73,17 @@ local function generate_global_data()
   local modules = game.get_filtered_item_prototypes({{filter = "type", type = "module"}, {filter = "flag", flag = "hidden", mode = "and", invert = true}})
   local selection_tools = game.get_filtered_item_prototypes({{filter = "type", type = "selection-tool"}})
   local entities = game.get_filtered_entity_prototypes({{filter = "type", type = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"}}})
-  local module_tiers = {}
 
   global.allowed_with_recipe = {}  -- dict(module_name -> dict(recipe_name -> bool)))
   global.allowed_in_entity = {}  -- dict(module_name -> dict(entity_name -> bool)))
-  global.modules = {}  -- array({name, type, tier, enabled}) (name = type + tier)
 
-  -- Initial pass, generate module_tiers: dict(tier -> array({name, type, tier, enabled})) 
+  -- Type module: {name, type, tier, enabled, localised_name, index} (name = type + tier)
+  global.modules = {}  -- array(<module>)
+  global.modules_by_tier = {}  -- dict(tier -> array(<module>))
+  global.modules_by_name = {}  -- dict(name -> <module>)
+
+
+  -- Initial pass, generate global.modules_by_tier
   for name, module in pairs(modules) do
     if not selection_tools["mis-insert-" .. name] then goto continue end
     local module_type = name
@@ -89,9 +93,9 @@ local function generate_global_data()
       module_type = name:sub(1, i-1)
       module_tier = tonumber(name:sub(i+1)) or 1  -- Don't use module.tier because Nullius starts at 0
     end
-    local tier_list = module_tiers[module_tier] or {}
+    local tier_list = global.modules_by_tier[module_tier] or {}
     table.insert(tier_list, {name = name, type = module_type, tier = module_tier, enabled = true, localised_name = module.localised_name})
-    module_tiers[module_tier] = tier_list
+    global.modules_by_tier[module_tier] = tier_list
 
     -- Compute limitations for each module
     global.allowed_with_recipe[name] = generate_allowed_with_recipe(module)
@@ -100,24 +104,22 @@ local function generate_global_data()
   end
 
   -- Add mis-empty to each tier
-  for tier, tier_list in pairs(module_tiers) do
+  for tier, tier_list in pairs(global.modules_by_tier) do
     table.insert(tier_list, {name = "empty-" .. tier, type = "empty", tier = tier, enabled = true, localised_name = {"item-name.mis-insert-empty"}})
   end
 
-  -- Flatten module_tiers in global.modules
-  for _, tier_list in pairs(module_tiers) do
+  -- Flatten global.modules_by_tier into global.modules
+  for _, tier_list in pairs(global.modules_by_tier) do
     for _, module in pairs(tier_list) do
       table.insert(global.modules, module)
     end
   end
 
   -- Generate lookup dict to get module index from name
-  global.modules_by_name = {}
   for i, module in pairs(global.modules) do
-    global.modules_by_name[module.name] = i
+    module.index = i
+    global.modules_by_name[module.name] = module
   end
-
-  global.modules_by_tier = module_tiers
 
   log(serpent.block(global.modules))
   log(serpent.block(global.modules_by_name))

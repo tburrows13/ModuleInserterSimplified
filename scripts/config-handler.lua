@@ -8,9 +8,8 @@ script.on_event(defines.events.on_research_finished,
           for _, product in pairs(recipe.products) do
             if product.type == "item" then
               local module_name = product.name
-              local index = global.modules_by_name[module_name]
-              if index then  -- TODO: check if this setting is enabled
-                local unlocked_module = global.modules[index]
+              local unlocked_module = global.modules_by_name[module_name]
+              if unlocked_module then  -- TODO: check if this setting is enabled
                 unlocked_module.enabled = true
                 local tier_to_disable = unlocked_module.tier - 2  -- TODO: get value from config
                 if tier_to_disable >= 1 then
