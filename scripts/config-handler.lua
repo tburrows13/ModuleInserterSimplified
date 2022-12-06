@@ -1,6 +1,9 @@
-local function handle_empties()
-  local empty_every = 2  -- TODO: get value from config
+Config = {}
+
+function Config.handle_empties()
+  local empty_every = 3  -- TODO: get value from config
   local tiers_since_last_empty = 1
+  local some_empty_enabled = false
   for tier, tier_list in pairs(global.modules_by_tier) do
     local some_enabled = false
     for _, module in pairs(tier_list) do
@@ -9,6 +12,7 @@ local function handle_empties()
         if some_enabled and tiers_since_last_empty >= empty_every then
           -- At least one module of this tier is enabled, so we can enable the empty module
           module.enabled = true
+          some_empty_enabled = true
           tiers_since_last_empty = 1
         else
           -- All modules of this tier are disabled, so we can disable the empty module
@@ -17,9 +21,13 @@ local function handle_empties()
         end
       end
       if module.enabled then
-        none_enabled = true
+        some_enabled = true
       end
     end
+  end
+  if not some_empty_enabled then
+    -- Enable the last one if there aren't any others
+    global.modules[#global.modules].enabled = true
   end
 end
 
@@ -44,7 +52,7 @@ script.on_event(defines.events.on_research_finished,
                     end
                   end
                 end
-                handle_empties()
+                Config.handle_empties()
               end
             end
           end
@@ -53,3 +61,5 @@ script.on_event(defines.events.on_research_finished,
     end
   end
 )
+
+return Config

@@ -121,6 +121,7 @@ local function generate_global_data()
     global.modules_by_name[module.name] = module
   end
 
+  Config.handle_empties()
   log(serpent.block(global.modules))
   log(serpent.block(global.modules_by_name))
 
