@@ -28,7 +28,7 @@ end
 
 function ConfigButtonGui.on_gui_click(event)
   local player = game.get_player(event.player_index)
-  Gui.open(player, global.player_data[event.player_index])
+  Gui.toggle(player)
 end
 
 gui.add_handlers(ConfigButtonGui)

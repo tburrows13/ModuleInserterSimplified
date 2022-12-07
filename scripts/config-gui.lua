@@ -155,6 +155,15 @@ function Gui.close(player, player_data)
   elems.mis_frame.destroy()
 end
 
+function Gui.toggle(player)
+  local player_data = global.player_data[player.index]
+  if player_data and player_data.elems.mis_frame.valid then
+    Gui.close(player, player_data)
+  else
+    Gui.open(player, player_data)
+  end
+end
+
 function Gui.module_toggled(player, player_data, event)
   local module_name = event.element.tags.name
   local module = global.modules_by_name[module_name]
