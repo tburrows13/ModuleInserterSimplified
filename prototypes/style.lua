@@ -13,3 +13,10 @@ styles.mis_flib_titlebar_drag_handle = {
   height = 24,
   horizontally_stretchable = "on",
 }
+
+styles.mis_mod_gui_button_green = {
+  type = "button_style",
+  parent = "tool_button_green",
+  size = 40,
+  padding = 8,
+}
