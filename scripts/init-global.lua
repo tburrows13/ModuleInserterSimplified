@@ -125,6 +125,9 @@ local function generate_global_data()
       module_type = name:sub(1, i-1)
       module_tier = tonumber(name:sub(i+1)) or 1  -- Don't use module.tier because Nullius starts at 0
     end
+    if name:sub(1, 9) == "ee-super-" then
+      module_tier = 0
+    end
     local tier_list = global.modules_by_tier[module_tier] or {}
     table.insert(tier_list, {name = name, type = module_type, tier = module_tier, localised_name = module.localised_name})
     global.modules_by_tier[module_tier] = tier_list
@@ -133,6 +136,13 @@ local function generate_global_data()
     global.allowed_with_recipe[name] = generate_allowed_with_recipe(module)
     global.allowed_in_entity[name] = generate_allowed_in_entity(module, entities)
     ::continue::
+  end
+
+  if global.modules_by_tier[0] then
+    -- Move cheat modules from tier 0 to tier n+1
+    local number_of_tiers = #global.modules_by_tier
+    global.modules_by_tier[number_of_tiers + 1] = global.modules_by_tier[0]
+    global.modules_by_tier[0] = nil
   end
 
   -- Add mis-empty to each tier
