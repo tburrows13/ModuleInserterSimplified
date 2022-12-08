@@ -89,7 +89,7 @@ local function generate_player_data(player, old_player_data)
     modules_enabled = modules_enabled,
     automatically_enable = old_player_data.automatically_enable or false,
     automatically_disable_tier_below = old_player_data.automatically_disable_tier_below or 1,
-    tiers_between_empty = old_player_data.tiers_between_empty or 3
+    tiers_between_empty = 100,  -- Effectively disabling this feature
   }
 
   for _, technology in pairs(player.force.technologies) do

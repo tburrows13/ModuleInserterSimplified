@@ -119,7 +119,7 @@ function Gui.build(player)
                 }
               }
             },
-            {
+            --[[{
               type = "flow",
               children = {
                 {
@@ -132,7 +132,7 @@ function Gui.build(player)
                   selected_index = player_data.tiers_between_empty,
                 }
               }
-            },
+            },]]
             Gui.build_module_table(player)
           }
         },
