@@ -13,7 +13,7 @@ function ConfigButtonGui.create(player)
     name = "mis_configure",
     style = "mis_mod_gui_button_green",
     sprite = "mis_configure_white",
-    tooltip = { "mis-config-gui.configure-tooltip" },
+    tooltip = { "", "\n", { "mis-config-gui.configure-tooltip" } },
     handler = { [defines.events.on_gui_click] = ConfigButtonGui.on_gui_click  }
   })
 end
