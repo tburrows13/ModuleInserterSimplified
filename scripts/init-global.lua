@@ -69,6 +69,38 @@ local function generate_allowed_in_entity(module, entities)
   return module_allowed_in_entity
 end
 
+local function generate_player_data(player, old_player_data)
+  if not old_player_data then old_player_data = {} end
+
+  local modules_enabled = old_player_data.modules_enabled or {}
+  for name, module in pairs(global.modules_by_name) do
+    if modules_enabled[name] == nil then
+      -- Apply default enabled state
+      if module.tier == 1 then
+        modules_enabled[name] = true
+      else
+        modules_enabled[name] = false
+      end
+    end
+  end
+
+  global.player_data[player.index] = {
+    elems = old_player_data.elems,
+    modules_enabled = modules_enabled,
+    automatically_enable = old_player_data.automatically_enable or false,
+    automatically_disable_tier_below = old_player_data.automatically_disable_tier_below or 1,
+    tiers_between_empty = old_player_data.tiers_between_empty or 3
+  }
+
+  for _, technology in pairs(player.force.technologies) do
+    if technology.researched then
+      Config.process_technology(technology, player_index)
+    end
+  end
+
+  Config.handle_empties(player.index)
+end
+
 local function generate_global_data()
   local modules = game.get_filtered_item_prototypes({{filter = "type", type = "module"}, {filter = "flag", flag = "hidden", mode = "and", invert = true}})
   local selection_tools = game.get_filtered_item_prototypes({{filter = "type", type = "selection-tool"}})
@@ -94,7 +126,7 @@ local function generate_global_data()
       module_tier = tonumber(name:sub(i+1)) or 1  -- Don't use module.tier because Nullius starts at 0
     end
     local tier_list = global.modules_by_tier[module_tier] or {}
-    table.insert(tier_list, {name = name, type = module_type, tier = module_tier, enabled = true, localised_name = module.localised_name})
+    table.insert(tier_list, {name = name, type = module_type, tier = module_tier, localised_name = module.localised_name})
     global.modules_by_tier[module_tier] = tier_list
 
     -- Compute limitations for each module
@@ -105,7 +137,7 @@ local function generate_global_data()
 
   -- Add mis-empty to each tier
   for tier, tier_list in pairs(global.modules_by_tier) do
-    table.insert(tier_list, {name = "empty-" .. tier, type = "empty", tier = tier, enabled = true, localised_name = {"item-name.mis-insert-empty"}})
+    table.insert(tier_list, {name = "empty-" .. tier, type = "empty", tier = tier, localised_name = {"item-name.mis-insert-empty"}})
   end
 
   -- Flatten global.modules_by_tier into global.modules
@@ -121,12 +153,15 @@ local function generate_global_data()
     global.modules_by_name[module.name] = module
   end
 
-  Config.handle_empties()
+  global.player_data = global.player_data or {}
+  for _, player in pairs(game.players) do
+    generate_player_data(player, global.player_data[player.index])
+  end
+
   log(serpent.block(global.modules))
   log(serpent.block(global.modules_by_name))
 
   global.players_shift_scroll_warning = global.players_shift_scroll_warning or {}
-  global.player_data = global.player_data or {}
   global.proxy_targets = global.proxy_targets or {}
 
   global.translations = {}
@@ -150,5 +185,12 @@ script.on_event(defines.events.on_player_joined_game,
   function(event)
     local player = game.get_player(event.player_index)
     request_translations(player)
+  end
+)
+
+script.on_event(defines.events.on_player_created,
+  function(event)
+    local player = game.get_player(event.player_index)
+    generate_player_data(player)
   end
 )

@@ -26,14 +26,15 @@ local function cycle_module(player, direction)
       local modules_length = #modules
       local first_index = global.modules_by_name[item].index
       local next_index = first_index
+      local modules_enabled = global.player_data[player.index].modules_enabled
 
       local next_module
       repeat
         next_index = get_next_index(next_index, direction, modules_length)
         next_module = modules[next_index]
-      until next_module.enabled or first_index == next_index
+      until modules_enabled[next_module.name] or first_index == next_index
 
-      if not next_module.enabled then return end  -- No other modules to cycle to
+      if not modules_enabled[next_module.name] then return end  -- No other modules to cycle to
 
       local next_module_name = next_module.name
       local next_selection_tool = prefix .. next_module_name

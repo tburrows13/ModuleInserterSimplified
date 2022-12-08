@@ -340,7 +340,6 @@ script.on_event({defines.events.on_lua_shortcut, "mis-give-module-inserter"},
   function(event)
     if event.prototype_name and event.prototype_name ~= "mis-give-module-inserter" then return end
     local player = game.get_player(event.player_index)
-    --Gui.toggle(player, global.player_data[event.player_index])
     local cursor_stack = player.cursor_stack
     local next_module
     if cursor_stack and cursor_stack.valid_for_read then

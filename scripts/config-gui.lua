@@ -2,9 +2,18 @@ local gui = require("__ModuleInserterSimplified__.scripts.flib-gui")
 
 local Gui = {}
 
-function Gui.build_module_table()
-  -- [x] | M Productivity 1 [x] | M Efficiency 1 [x] | M Speed 1 [x]
-  -- [ ] | M Productivity 2 [x] | M Efficiency 2 [ ] | M Speed 2 [x]
+local function array_to_n(n)
+  local t = {}
+  for i = 1, n do
+    t[i] = i
+  end
+  return t
+end
+
+function Gui.build_module_table(player)
+  local player_data = global.player_data[player.index]
+  local modules_enabled = player_data.modules_enabled
+
   -- Get max tier
   local column_count = 0
   for _, tier_list in pairs(global.modules_by_tier) do
@@ -24,7 +33,7 @@ function Gui.build_module_table()
       if module and module.type ~= "empty" then
         table.insert(module_table.children, {
           type = "checkbox",
-          state = module.enabled,
+          state = modules_enabled[module.name],
           caption = module.localised_name,
           tags = { name = module.name },
           handler = { [defines.events.on_gui_checked_state_changed] = Gui.module_toggled },
@@ -45,6 +54,8 @@ function Gui.build_module_table()
 end
 
 function Gui.build(player)
+  local player_data = global.player_data[player.index]
+
   local elems = gui.add(player.gui.screen, {
     {
       type = "frame",
@@ -88,7 +99,7 @@ function Gui.build(player)
             {
               type = "checkbox",
               name = "mis_automatically_enable",
-              state = true,
+              state = player_data.automatically_enable,
               caption = { "mis-config-gui.automatically-enable" },
               actions = {
                 on_checked_state_changed = { gui = "config", action = "checkbox_toggled" }
@@ -103,7 +114,8 @@ function Gui.build(player)
                 },
                 {
                   type = "drop-down",
-                  items = { 1, 2, 3 },
+                  items = array_to_n(#global.modules_by_tier),
+                  selected_index = player_data.automatically_disable_tier_below,
                 }
               }
             },
@@ -116,28 +128,26 @@ function Gui.build(player)
                 },
                 {
                   type = "drop-down",
-                  items = { 1, 2, 3 },
-                  selected_index = 3,
+                  items = array_to_n(#global.modules_by_tier),
+                  selected_index = player_data.tiers_between_empty,
                 }
               }
             },
-            Gui.build_module_table()
+            Gui.build_module_table(player)
           }
         },
       }
     }
   })
 
-  local player_data = {}
   elems.mis_frame.force_auto_center()
   player_data.elems = elems
-  global.player_data[player.index] = player_data
   return player_data
 end
 
 
 function Gui.open(player, player_data)
-  if not player_data or not player_data.elems.mis_frame.valid then
+  if not player_data or not player_data.elems or not player_data.elems.mis_frame.valid then
     player_data = Gui.build(player)
   end
   local elems = player_data.elems
@@ -148,16 +158,15 @@ end
 
 function Gui.close(player, player_data)
   local elems = player_data.elems
-  elems.mis_frame.visible = false
-  if player.opened == elems.mis_frame then
-    player.opened = nil
+  if elems and elems.mis_frame and elems.mis_frame.valid then
+    elems.mis_frame.destroy()
   end
-  elems.mis_frame.destroy()
+  player_data.elems = nil
 end
 
 function Gui.toggle(player)
   local player_data = global.player_data[player.index]
-  if player_data and player_data.elems.mis_frame.valid then
+  if player_data and player_data.elems and player_data.elems.mis_frame.valid then
     Gui.close(player, player_data)
   else
     Gui.open(player, player_data)
@@ -166,9 +175,8 @@ end
 
 function Gui.module_toggled(player, player_data, event)
   local module_name = event.element.tags.name
-  local module = global.modules_by_name[module_name]
-  module.enabled = event.element.state
-  Config.handle_empties()
+  player_data.modules_enabled[module_name] = event.element.state
+  Config.handle_empties(player.index)
 end
 
 gui.add_handlers(Gui,
