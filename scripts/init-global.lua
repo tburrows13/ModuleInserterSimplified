@@ -87,14 +87,12 @@ local function generate_player_data(player, old_player_data)
   global.player_data[player.index] = {
     elems = old_player_data.elems,
     modules_enabled = modules_enabled,
-    automatically_enable = old_player_data.automatically_enable or true,
-    automatically_disable_tier_below = old_player_data.automatically_disable_tier_below or 2,
     tiers_between_empty = 100,  -- Effectively disabling this feature
   }
 
   for _, technology in pairs(player.force.technologies) do
     if technology.researched then
-      Config.process_technology(technology, player_index)
+      Config.process_technology(technology, player.index)
     end
   end
 
@@ -170,6 +168,7 @@ local function generate_global_data()
 
   log(serpent.block(global.modules))
   log(serpent.block(global.modules_by_name))
+  log(serpent.block(global.modules_by_tier))
 
   global.players_shift_scroll_warning = global.players_shift_scroll_warning or {}
   global.proxy_targets = global.proxy_targets or {}

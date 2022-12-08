@@ -33,10 +33,13 @@ function Gui.build_module_table(player)
       if module and module.type ~= "empty" then
         table.insert(module_table.children, {
           type = "checkbox",
+          name = module.name,
           state = modules_enabled[module.name],
-          caption = module.localised_name,
+          caption = "[item=" .. module.name .. "]",
+          tooltip = module.localised_name,
           tags = { name = module.name },
           handler = { [defines.events.on_gui_checked_state_changed] = Gui.module_toggled },
+          style_mods = { right_margin = 14 },
           --[[children = {
             {
               type = "sprite",
@@ -45,8 +48,8 @@ function Gui.build_module_table(player)
           }]]
         })
       else
-        --table.insert(module_table.children, { type = "empty-widget" })
-        table.insert(module_table.children, { type = "label", caption = "Empty" })
+        table.insert(module_table.children, { type = "empty-widget" })
+        --table.insert(module_table.children, { type = "label", caption = "Empty" })
       end
     end
   end
@@ -74,7 +77,7 @@ function Gui.build(player)
             {
               type = "label",
               style = "frame_title",
-              caption = { "mod-name.ModuleInserterSimplified" },
+              caption = { "mis-config-gui.title" },
               ignored_by_interaction = true,
             },
             { type = "empty-widget", style = "mis_flib_titlebar_drag_handle", ignored_by_interaction = true },
@@ -96,42 +99,52 @@ function Gui.build(player)
           style = "inside_shallow_frame_with_padding",
           direction = "vertical",
           children = {
-            {
+            --[[{
               type = "checkbox",
               name = "mis_automatically_enable",
               state = player_data.automatically_enable,
               caption = { "mis-config-gui.automatically-enable" },
+              tooltip = { "mis-config-gui.automatically-enable-tooltip" },
               handler = { [defines.events.on_gui_checked_state_changed] = Gui.automatically_enable_toggled },
             },
             {
               type = "flow",
+              style = "centering_horizontal_flow",
               children = {
                 {
                   type = "label",
-                  caption = "Automatically hide modules more than X tiers old"
+                  caption = { "mis-config-gui.automatically-disable" },
+                  tooltip = { "mis-config-gui.automatically-disable-tooltip" },
                 },
                 {
                   type = "drop-down",
                   items = array_to_n(#global.modules_by_tier),
                   selected_index = player_data.automatically_disable_tier_below,
                   handler = { [defines.events.on_gui_selection_state_changed] = Gui.automatically_disable_tier_below_changed },
+                  style_mods = { width = (#global.modules_by_tier < 10) and 60 or 70 },
                 }
               }
             },
-            --[[{
+            {
               type = "flow",
+              style = "centering_horizontal_flow",
               children = {
                 {
                   type = "label",
-                  caption = "[item=mis-insert-empty-1] every X tiers",
+                  caption = "Include [item=mis-insert-empty-1] every X tiers",
                 },
                 {
                   type = "drop-down",
                   items = array_to_n(#global.modules_by_tier),
-                  selected_index = player_data.tiers_between_empty,
+                  selected_index = 3,
+                  style_mods = { width = (#global.modules_by_tier < 10) and 60 or 70 },
                 }
               }
             },]]
+            --[[{
+              type = "label",
+              caption = 
+            }]]
             Gui.build_module_table(player)
           }
         },

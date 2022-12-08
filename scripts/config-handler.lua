@@ -46,17 +46,12 @@ function Config.process_technology(technology, player_index)
           if product.type == "item" then
             local module_name = product.name
             local unlocked_module = global.modules_by_name[module_name]
-            if unlocked_module and player_data.automatically_enable then
+            if unlocked_module then
               modules_enabled[module_name] = true
-              changes_made = true
-              local tier_to_disable = unlocked_module.tier - player_data.automatically_disable_tier_below
-              if tier_to_disable >= 1 then
-                for _, module in pairs(global.modules_by_tier[tier_to_disable]) do
-                  if module.type == unlocked_module.type then
-                    modules_enabled[module.name] = false
-                  end
-                end
+              if player_data.elems and player_data.elems[module_name] then
+                player_data.elems[module_name].state = true
               end
+              changes_made = true
             end
           end
         end
