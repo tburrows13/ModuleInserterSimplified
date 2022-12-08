@@ -101,9 +101,7 @@ function Gui.build(player)
               name = "mis_automatically_enable",
               state = player_data.automatically_enable,
               caption = { "mis-config-gui.automatically-enable" },
-              actions = {
-                on_checked_state_changed = { gui = "config", action = "checkbox_toggled" }
-              }
+              handler = { [defines.events.on_gui_checked_state_changed] = Gui.automatically_enable_toggled },
             },
             {
               type = "flow",
@@ -116,6 +114,7 @@ function Gui.build(player)
                   type = "drop-down",
                   items = array_to_n(#global.modules_by_tier),
                   selected_index = player_data.automatically_disable_tier_below,
+                  handler = { [defines.events.on_gui_selection_state_changed] = Gui.automatically_disable_tier_below_changed },
                 }
               }
             },
@@ -171,6 +170,14 @@ function Gui.toggle(player)
   else
     Gui.open(player, player_data)
   end
+end
+
+function Gui.automatically_enable_toggled(player, player_data, event)
+  player_data.automatically_enable = event.element.state
+end
+
+function Gui.automatically_disable_tier_below_changed(player, player_data, event)
+  player_data.automatically_disable_tier_below = event.element.selected_index
 end
 
 function Gui.module_toggled(player, player_data, event)

@@ -87,8 +87,8 @@ local function generate_player_data(player, old_player_data)
   global.player_data[player.index] = {
     elems = old_player_data.elems,
     modules_enabled = modules_enabled,
-    automatically_enable = old_player_data.automatically_enable or false,
-    automatically_disable_tier_below = old_player_data.automatically_disable_tier_below or 1,
+    automatically_enable = old_player_data.automatically_enable or true,
+    automatically_disable_tier_below = old_player_data.automatically_disable_tier_below or 2,
     tiers_between_empty = 100,  -- Effectively disabling this feature
   }
 

@@ -3,7 +3,7 @@ Config = {}
 function Config.handle_empties(player_index)
   local player_data = global.player_data[player_index]
   local modules_enabled = player_data.modules_enabled
-  local empty_every = player_data.tiers_between_empty  -- TODO: get value from config
+  local empty_every = player_data.tiers_between_empty
   local tiers_since_last_empty = 1
   local some_empty_enabled = false
   for tier, tier_list in pairs(global.modules_by_tier) do
@@ -46,10 +46,10 @@ function Config.process_technology(technology, player_index)
           if product.type == "item" then
             local module_name = product.name
             local unlocked_module = global.modules_by_name[module_name]
-            if unlocked_module then  -- TODO: check if this setting is enabled
+            if unlocked_module and player_data.automatically_enable then
               modules_enabled[module_name] = true
               changes_made = true
-              local tier_to_disable = unlocked_module.tier - 2  -- TODO: get value from config
+              local tier_to_disable = unlocked_module.tier - player_data.automatically_disable_tier_below
               if tier_to_disable >= 1 then
                 for _, module in pairs(global.modules_by_tier[tier_to_disable]) do
                   if module.type == unlocked_module.type then
