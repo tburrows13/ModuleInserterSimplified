@@ -33,6 +33,7 @@ local selection_tool_template = {
 
 local module_tiers = {}
 for name, prototype in pairs(data.raw.module) do
+  if prototype.subgroup == "py-alienlife-modules" or prototype.subgroup == "py-alienlife-numal" then goto continue end
   module_tiers[prototype.tier] = true
   local selection_tool = table.deepcopy(selection_tool_template)
   selection_tool.name = "mis-insert-" .. name
@@ -42,6 +43,7 @@ for name, prototype in pairs(data.raw.module) do
   selection_tool.icon_mipmaps = prototype.icon_mipmaps
   selection_tool.localised_name = {"mis-tool.insert-module", prototype.localised_name or {"item-name." .. prototype.name}}
   data:extend{selection_tool}
+  ::continue::
 end
 
 local empty_selection_tool_template = table.deepcopy(selection_tool_template)
