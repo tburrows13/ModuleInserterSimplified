@@ -13,8 +13,14 @@ Right-click and drag the mouse to insert a single module into each machine:
 ![Add single module to all](https://github.com/tburrows13/ModuleInserterSimplified/raw/master/resources/insert-single.mp4)
 
 Shift-click and drag the mouse to clear module requests.
-Shift-right-click and drag the mouse to remove one module request per machine.
+Shift-right-click and drag the mouse to remove one module request from each machine.
 Use _Remove modules_ to remove all modules with left-click, and one module per machine with right-click.
+
+Click on the configuration button in the top-left corner whilst holding the module inserter to access the configuration window. Use of this feature is completely optional, but it can be useful to remove modules from the cycle that aren't being used.
+Modules will be automatically enabled when unlocked.
+![Configuration GUI](https://github.com/tburrows13/ModuleInserterSimplified/raw/master/resources/config-gui.png)
+
+When a module request is completed, the modules in that machine will be sorted.
 
 -----
 ## Information

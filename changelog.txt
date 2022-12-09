@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.0
+Date: 9 December 2022
+  Features:
+    - Added optional configuration GUI for removing modules from the cycle
+    - Shift-right-click and drag the mouse to remove a single module request from each selected machine
+    - Modules are now sorted, once the request is complete
+  Changes:
+    - No longer works with animal 'modules' from Pyanodons AlienLife
+---------------------------------------------------------------------------------------------------
 Version: 1.0.2
 Date: 28 September 2022
   Bugfixes:
