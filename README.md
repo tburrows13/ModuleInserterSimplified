@@ -34,7 +34,9 @@ Works in multiplayer and compatible with any mod. Tested for compatibility with 
 ## Recommendations
 - Review the above instructions in-game using _Tips and tricks_
 - Remove `Shift + Scroll` zoom keybinds in _Controls_ settings to stop it interfering with module cycling
+- Fully integrated with [Ghost Warnings](https://mods.factorio.com/mod/GhostWarnings)
 
------
-## Future updates?
-- Configuration GUI to hide modules from the rotation
+---
+## Translation
+
+You can help by translating this mod into your language using [CrowdIn](https://crowdin.com/project/factorio-mods-localization). Any translations made will be included in the next release.
