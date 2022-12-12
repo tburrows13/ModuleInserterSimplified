@@ -1,3 +1,5 @@
+local util = require "util"
+
 local function request_translations(player)
   local selection_tools = game.get_filtered_item_prototypes({{filter = "type", type = "selection-tool"}})
   local translations = {}
@@ -71,8 +73,8 @@ end
 
 local function generate_player_data(player, old_player_data)
   if not old_player_data then old_player_data = {} end
-
   local modules_enabled = old_player_data.modules_enabled or {}
+  local old_modules_enabled = util.copy(modules_enabled)
   for name, module in pairs(global.modules_by_name) do
     if modules_enabled[name] == nil then
       -- Apply default enabled state
@@ -92,7 +94,7 @@ local function generate_player_data(player, old_player_data)
 
   for _, technology in pairs(player.force.technologies) do
     if technology.researched then
-      Config.process_technology(technology, player.index)
+      Config.process_technology(technology, player.index, old_modules_enabled)
     end
   end
 
