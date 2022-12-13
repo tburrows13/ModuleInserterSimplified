@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.2
+Date: 13 December 2022
+  Bugfixes:
+    - Fixed crash when removing a building with an active module request
+    - Fixed crash on loading a save containing multiple players
+---------------------------------------------------------------------------------------------------
 Version: 1.1.1
 Date: 12 December 2022
   Bugfixes:
