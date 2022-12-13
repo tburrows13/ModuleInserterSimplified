@@ -177,7 +177,7 @@ local function generate_global_data()
 
   global.translations = {}
   global.translation_requests = {}
-  for _, player in pairs(game.is_multiplayer() and game.connected_players or game.players) do
+  for _, player in pairs(game.connected_players) do
     request_translations(player)
   end
 end
