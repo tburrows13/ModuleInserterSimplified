@@ -1,7 +1,7 @@
 script.on_event(defines.events.on_entity_destroyed,
   function(event)
     local entity = global.proxy_targets[event.registration_number]
-    if not entity then return end
+    if not (entity and entity.valid) then return end
     global.proxy_targets[event.registration_number] = nil
 
     local module_inventory = entity.get_module_inventory()
