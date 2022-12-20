@@ -36,16 +36,10 @@ function Gui.build_module_table(player)
           name = module.name,
           state = modules_enabled[module.name],
           caption = "[item=" .. module.name .. "]",
-          tooltip = module.localised_name,
+          tooltip = { "", "[font=default-semibold][color=255,230,192]", module.localised_name, "[/color][/font]" },
           tags = { name = module.name },
           handler = { [defines.events.on_gui_checked_state_changed] = Gui.module_toggled },
-          style_mods = { right_margin = 14 },
-          --[[children = {
-            {
-              type = "sprite",
-              sprite = "item/" .. module.name,
-            }
-          }]]
+          style_mods = { height = 24, right_margin = i == column_count and 0 or 12 },
         })
       else
         table.insert(module_table.children, { type = "empty-widget" })
