@@ -18,7 +18,7 @@ data:extend{
   {
     type = "custom-input",
     name = "mis-give-module-inserter",
-    key_sequence = "ALT + I",
+    key_sequence = "ALT + M",
     localised_name = { "shortcut-name.mis-give-module-inserter" },
     order = "a",
   },
