@@ -1,6 +1,6 @@
 # Module Inserter Simplified
 
-Click the shortcut button or press `Alt + I` to get the module inserter. Activate with a module in hand to Use `Shift + Scroll` to cycle between modules:
+Click the shortcut button or press `Alt + M` to get the module inserter. Activate with a module in hand to Use `Shift + Scroll` to cycle between modules:
 
 ![Cycle modules](https://github.com/tburrows13/ModuleInserterSimplified/raw/master/resources/cycle-modules.mp4)
 

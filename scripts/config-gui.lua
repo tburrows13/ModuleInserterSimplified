@@ -36,7 +36,7 @@ function Gui.build_module_table(player)
           name = module.name,
           state = modules_enabled[module.name],
           caption = "[item=" .. module.name .. "]",
-          tooltip = { "", "[font=default-semibold][color=255,230,192]", module.localised_name, "[/color][/font]" },
+          tooltip = { "", "[font=default-semibold]", module.localised_name, "[/font]" },
           tags = { name = module.name },
           handler = { [defines.events.on_gui_checked_state_changed] = Gui.module_toggled },
           style_mods = { height = 24, right_margin = i == column_count and 0 or 12 },
