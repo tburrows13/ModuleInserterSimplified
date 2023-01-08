@@ -1,3 +1,5 @@
+![Trailer](https://github.com/tburrows13/ModuleInserterSimplified/raw/master/resources/trailer.mp4)
+
 # Module Inserter Simplified
 
 Click the shortcut button or press `Alt + M` to get the module inserter. Activate with a module in hand to Use `Shift + Scroll` to cycle between modules:
@@ -28,7 +30,7 @@ The original [Module Inserter](https://mods.factorio.com/mod/ModuleInserter) is 
 
 _Module Inserter Simplified_ is very simple and doesn't have configurations to set up beforehand. For 99% of usecases it will be much more straightforward. Using right-click and drag (insert single module) it is possible to request any combination of modules, but you may prefer to still use Module Inserter (Extended) for this. Module Inserter Simplified is a completely separate mod so there's no problems having both in the same save.
 
-Works in multiplayer and compatible with any mod. Tested for compatibility with [Space Exploration](https://mods.factorio.com/mod/space-exploration), [Krastorio2](https://mods.factorio.com/mod/Krastorio2), [Bob's Modules](https://mods.factorio.com/mod/bobmodules), and [Nullius](https://mods.factorio.com/mod/nullius).
+Works in multiplayer and compatible with any mod. Tested for compatibility with [Space Exploration](https://mods.factorio.com/mod/space-exploration), [Krastorio2](https://mods.factorio.com/mod/Krastorio2), [Bob's Modules](https://mods.factorio.com/mod/bobmodules), [Pyanodons](https://mods.factorio.com/user/pyanodon), and [Nullius](https://mods.factorio.com/mod/nullius).
 
 -----
 ## Recommendations
