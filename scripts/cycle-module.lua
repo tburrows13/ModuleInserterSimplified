@@ -1,6 +1,6 @@
 local function control_conflict_warn(player)
   local previous_warnings = global.players_shift_scroll_warning
-  if not previous_warnings[player.index] then
+  if not previous_warnings[player.index] and player.input_method ~= defines.input_method.game_controller then
     player.print({"mis.control-conflict-warn"})
     previous_warnings[player.index] = true
   end
