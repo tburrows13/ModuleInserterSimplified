@@ -1,4 +1,4 @@
-local gui = require("__ModuleInserterSimplified__.scripts.flib-gui")
+local gui = require("__ModuleInserterSimplified__.scripts.gui-lite")
 
 local Gui = {}
 

@@ -1,4 +1,4 @@
-local gui = require("__ModuleInserterSimplified__.scripts.flib-gui")
+local gui = require("__ModuleInserterSimplified__.scripts.gui-lite")
 local mod_gui = require("__core__.lualib.mod-gui")
 
 local ConfigButtonGui = {}

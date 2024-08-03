@@ -1,5 +1,7 @@
 local util = require "util"
 
+local InitGlobal = {}
+
 local function request_translations(player)
   local selection_tools = game.get_filtered_item_prototypes({{filter = "type", type = "selection-tool"}})
   local translations = {}
@@ -19,19 +21,17 @@ local function request_translations(player)
   global.translation_requests[player.index] = translation_requests
 end
 
-script.on_event(defines.events.on_string_translated,
-  function(event)
-    if not event.translated then return end
-    local player_index = event.player_index
-    local translation_requests = global.translation_requests[player_index]
-    if not translation_requests or not translation_requests[event.id] then return end
-    local name = translation_requests[event.id]
+local function on_string_translated(event)
+  if not event.translated then return end
+  local player_index = event.player_index
+  local translation_requests = global.translation_requests[player_index]
+  if not translation_requests or not translation_requests[event.id] then return end
+  local name = translation_requests[event.id]
 
-    local translations = global.translations
-    translations[player_index] = translations[player_index] or {}
-    translations[player_index][name] = event.result
-  end
-)
+  local translations = global.translations
+  translations[player_index] = translations[player_index] or {}
+  translations[player_index][name] = event.result
+end
 
 local function generate_allowed_with_recipe(module)
   -- Compute recipe limitations
@@ -182,7 +182,7 @@ local function generate_global_data()
   end
 end
 
-script.on_init(
+script.on_init(  -- TODO convert to event-handler format
   function()
     generate_global_data()
     global.players_last_module = {}
@@ -190,18 +190,20 @@ script.on_init(
   end
 )
 script.on_configuration_changed(generate_global_data)
-script.on_event(defines.events.on_game_created_from_scenario, generate_global_data)
 
-script.on_event(defines.events.on_player_joined_game,
-  function(event)
-    local player = game.get_player(event.player_index)
-    request_translations(player)
-  end
-)
+local function on_player_joined_game(event)
+  local player = game.get_player(event.player_index)
+  request_translations(player)
+end
 
-script.on_event(defines.events.on_player_created,
-  function(event)
-    local player = game.get_player(event.player_index)
-    generate_player_data(player)
-  end
-)
+local function on_player_created(event)
+  local player = game.get_player(event.player_index)
+  generate_player_data(player)
+end
+
+InitGlobal.events = {
+  [defines.events.on_string_translated] = on_string_translated,
+  [defines.events.on_game_created_from_scenario] = generate_global_data,
+  [defines.events.on_player_joined_game] = on_player_joined_game,
+  [defines.events.on_player_created] = on_player_created,
+}

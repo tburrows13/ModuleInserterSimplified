@@ -1,14 +1,14 @@
-script.on_event(defines.events.on_entity_destroyed,
-  function(event)
-    local entity = global.proxy_targets[event.registration_number]
-    if not (entity and entity.valid) then return end
-    global.proxy_targets[event.registration_number] = nil
+local InsertModule = {}
 
-    local module_inventory = entity.get_module_inventory()
-    if not module_inventory then return end
-    module_inventory.sort_and_merge()
-  end
-)
+local function on_entity_destroyed(event)
+  local entity = global.proxy_targets[event.registration_number]
+  if not (entity and entity.valid) then return end
+  global.proxy_targets[event.registration_number] = nil
+
+  local module_inventory = entity.get_module_inventory()
+  if not module_inventory then return end
+  module_inventory.sort_and_merge()
+end
 
 local function get_property(entity, property)
   if entity.name == "entity-ghost" then
@@ -292,45 +292,50 @@ local function insert_modules(event, insert_single)
     end
   end
 end
-script.on_event(defines.events.on_player_selected_area, function(event) insert_modules(event) end)
-script.on_event(defines.events.on_player_reverse_selected_area, function(event) insert_modules(event, true) end)
 
-script.on_event({defines.events.on_player_alt_selected_area},
-  function(event)
-    local selection_tool = event.item
-    local prefix = selection_tool:sub(1, 11)
-    if prefix == "mis-insert-" then
-      for _, entity in pairs(event.entities) do
-        request_proxy = entity.surface.find_entity("item-request-proxy", entity.position)
-        if request_proxy then
-          request_proxy.destroy{raise_destroy = true}
-        end
+local function on_player_alt_selected_area(event)
+  local selection_tool = event.item
+  local prefix = selection_tool:sub(1, 11)
+  if prefix == "mis-insert-" then
+    for _, entity in pairs(event.entities) do
+      request_proxy = entity.surface.find_entity("item-request-proxy", entity.position)
+      if request_proxy then
+        request_proxy.destroy{raise_destroy = true}
       end
     end
   end
-)
+end
 
-script.on_event({defines.events.on_player_alt_reverse_selected_area},
-  function(event)
-    local selection_tool = event.item
-    local prefix = selection_tool:sub(1, 11)
-    if prefix == "mis-insert-" then
-      for _, entity in pairs(event.entities) do
-        request_proxy = entity.surface.find_entity("item-request-proxy", entity.position)
-        if request_proxy then
-          -- Remove one request
-          local requests = request_proxy.item_requests
-          local item, count = next(requests)
-          if item and count > 0 then
-            if count > 1 then
-              requests[item] = count - 1
-            else
-              requests[item] = nil
-            end
-            request_proxy.item_requests = requests
+local function on_player_alt_reverse_selected_area(event)
+  local selection_tool = event.item
+  local prefix = selection_tool:sub(1, 11)
+  if prefix == "mis-insert-" then
+    for _, entity in pairs(event.entities) do
+      request_proxy = entity.surface.find_entity("item-request-proxy", entity.position)
+      if request_proxy then
+        -- Remove one request
+        local requests = request_proxy.item_requests
+        local item, count = next(requests)
+        if item and count > 0 then
+          if count > 1 then
+            requests[item] = count - 1
+          else
+            requests[item] = nil
           end
+          request_proxy.item_requests = requests
         end
       end
     end
   end
-)
+end
+
+
+InsertModule.events = {
+  [defines.events.on_entity_destroyed] = on_entity_destroyed,
+  [defines.events.on_player_selected_area] = function(event) insert_modules(event) end,
+  [defines.events.on_player_reverse_selected_area] = function(event) insert_modules(event, true) end,
+  [defines.events.on_player_alt_selected_area] = on_player_alt_selected_area,
+  [defines.events.on_player_alt_reverse_selected_area] = on_player_alt_reverse_selected_area,
+}
+
+return InsertModule

@@ -64,13 +64,15 @@ function Config.process_technology(technology, player_index, old_modules_enabled
   end
 end
 
-script.on_event(defines.events.on_research_finished,
-  function(event)
-    local technology = event.research
-    for _, player in pairs(technology.force.players) do
-      Config.process_technology(technology, player.index)
-    end
+local function on_research_finished(event)
+  local technology = event.research
+  for _, player in pairs(technology.force.players) do
+    Config.process_technology(technology, player.index)
   end
-)
+end
+
+Config.events = {
+  [defines.events.on_research_finished] = on_research_finished
+}
 
 return Config
