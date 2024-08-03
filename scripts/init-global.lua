@@ -182,14 +182,14 @@ local function generate_global_data()
   end
 end
 
-script.on_init(  -- TODO convert to event-handler format
-  function()
-    generate_global_data()
-    global.players_last_module = {}
-    global.proxy_targets = {}
-  end
-)
-script.on_configuration_changed(generate_global_data)
+InitGlobal.on_init =  function()
+  generate_global_data()
+  global.players_last_module = {}
+  global.proxy_targets = {}
+end
+
+
+InitGlobal.on_configuration_changed = generate_global_data
 
 local function on_player_joined_game(event)
   local player = game.get_player(event.player_index)
@@ -207,3 +207,5 @@ InitGlobal.events = {
   [defines.events.on_player_joined_game] = on_player_joined_game,
   [defines.events.on_player_created] = on_player_created,
 }
+
+return InitGlobal
