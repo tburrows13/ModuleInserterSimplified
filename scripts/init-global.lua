@@ -78,7 +78,7 @@ local function generate_player_data(player, old_player_data)
   for name, module in pairs(global.modules_by_name) do
     if modules_enabled[name] == nil then
       -- Apply default enabled state
-      if module.tier == 1 then
+      if module.tier == 1 or module.type == "empty" then
         modules_enabled[name] = true
       else
         modules_enabled[name] = false
@@ -97,8 +97,6 @@ local function generate_player_data(player, old_player_data)
       Config.process_technology(technology, player.index, old_modules_enabled)
     end
   end
-
-  Config.handle_empties(player.index)
 end
 
 local function generate_global_data()
@@ -145,10 +143,8 @@ local function generate_global_data()
     global.modules_by_tier[0] = nil
   end
 
-  -- Add mis-empty to each tier
-  for tier, tier_list in pairs(global.modules_by_tier) do
-    table.insert(tier_list, {name = "empty-" .. tier, type = "empty", tier = tier, localised_name = {"item-name.mis-insert-empty"}})
-  end
+  -- Add remove-modules to tier -1
+  global.modules_by_tier[-1] = {{name = "remove-modules", type = "empty", tier = -1, localised_name = {"item-name.remove-modules"}}}
 
   -- Flatten global.modules_by_tier into global.modules
   for _, tier_list in pairs(global.modules_by_tier) do
@@ -187,7 +183,6 @@ InitGlobal.on_init =  function()
   global.players_last_module = {}
   global.proxy_targets = {}
 end
-
 
 InitGlobal.on_configuration_changed = generate_global_data
 

@@ -76,6 +76,7 @@ function CycleModule.set_cursor_module(player, module)
   local cursor_stack = player.cursor_stack
 
   local selection_tool = "mis-insert-" .. module
+
   -- Check if it exists
   cursor_stack.set_stack(selection_tool)
   local label = global.translations[player.index][selection_tool]

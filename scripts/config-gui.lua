@@ -190,7 +190,6 @@ end
 function Gui.module_toggled(player, player_data, event)
   local module_name = event.element.tags.name
   player_data.modules_enabled[module_name] = event.element.state
-  Config.handle_empties(player.index)
 end
 
 gui.add_handlers(Gui,

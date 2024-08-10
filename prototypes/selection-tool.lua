@@ -46,24 +46,19 @@ for name, prototype in pairs(data.raw.module) do
   ::continue::
 end
 
-local empty_selection_tool_template = table.deepcopy(selection_tool_template)
---empty_selection_tool_template.name = "mis-insert-empty"
-empty_selection_tool_template.localised_name = {"item-name.mis-insert-empty"}
-empty_selection_tool_template.icon = "__core__/graphics/cancel.png"
-empty_selection_tool_template.icon_size = 64
-empty_selection_tool_template.icon_mipmaps = 1
-empty_selection_tool_template.selection_cursor_box_type = "not-allowed"  -- Red
-empty_selection_tool_template.reverse_selection_cursor_box_type = "not-allowed"
-empty_selection_tool_template.selection_color = { r = 1, g = 0, b = 0 }
-empty_selection_tool_template.reverse_selection_color = { r = 1, g = 0.3, b = 0.2 }
-empty_selection_tool_template.alt_selection_color = { r = 0, g = 0, b = 0, a = 0 }
-empty_selection_tool_template.alt_reverse_selection_color = { r = 0, g = 0, b = 0, a = 0 }
-empty_selection_tool_template.alt_selection_mode = {"nothing"}
-empty_selection_tool_template.alt_reverse_selection_mode = {"nothing"}
+local empty_selection_tool = table.deepcopy(selection_tool_template)
+empty_selection_tool.name = "mis-insert-remove-modules"
+empty_selection_tool.localised_name = {"item-name.remove-modules"}
+empty_selection_tool.icon = "__core__/graphics/cancel.png"
+empty_selection_tool.icon_size = 64
+empty_selection_tool.icon_mipmaps = 1
+empty_selection_tool.selection_cursor_box_type = "not-allowed"  -- Red
+empty_selection_tool.reverse_selection_cursor_box_type = "not-allowed"
+empty_selection_tool.selection_color = { r = 1, g = 0, b = 0 }
+empty_selection_tool.reverse_selection_color = { r = 1, g = 0.3, b = 0.2 }
+empty_selection_tool.alt_selection_color = { r = 0, g = 0, b = 0, a = 0 }
+empty_selection_tool.alt_reverse_selection_color = { r = 0, g = 0, b = 0, a = 0 }
+empty_selection_tool.alt_selection_mode = {"nothing"}
+empty_selection_tool.alt_reverse_selection_mode = {"nothing"}
 
--- Create one "empty" tool per module tier
-for i = 1, table_size(module_tiers) do
-  local empty_selection_tool = table.deepcopy(empty_selection_tool_template)
-  empty_selection_tool.name = "mis-insert-empty-" .. i
-  data:extend{empty_selection_tool}
-end
+data:extend{empty_selection_tool}

@@ -3,11 +3,10 @@ local mod_gui = require("__core__.lualib.mod-gui")
 
 local ModuleGui = {}
 
-function ModuleGui.create_module_table(player)
-  local player_data = global.player_data[player.index]
+function ModuleGui.create_module_table(player, player_data)
   local column_count = 0
   for _, tier_list in pairs(global.modules_by_tier) do
-    column_count = math.max(column_count, #tier_list - 1) -- -1 because we don't show the empty
+    column_count = math.max(column_count, #tier_list)
   end
 
   local module_table = {
@@ -19,7 +18,7 @@ function ModuleGui.create_module_table(player)
   for _, tier_list in pairs(global.modules_by_tier) do
     for i = 1, column_count do
       local module = tier_list[i]
-      if module and module.type ~= "empty" then
+      if module then
         local style = "slot_button"
         if not player_data.modules_enabled[module.name] then
           style = "red_slot_button"
@@ -28,7 +27,7 @@ function ModuleGui.create_module_table(player)
           type = "sprite-button",
           style = style,
           name = module.name,
-          sprite = "item/" .. module.name,
+          sprite = "item/mis-insert-" .. module.name,
           --state = modules_enabled[module.name],
           --caption = "[item=" .. module.name .. "]",
           tooltip = { "", "\n\n[font=default-semibold]", module.localised_name, "[/font]\n", {"mis-gui.module-tooltip"} },
@@ -38,7 +37,6 @@ function ModuleGui.create_module_table(player)
         })
       else
         table.insert(module_table.children, { type = "empty-widget" })
-        --table.insert(module_table.children, { type = "label", caption = "Empty" })
       end
     end
   end
@@ -46,6 +44,8 @@ function ModuleGui.create_module_table(player)
 end
 
 function ModuleGui.create(player)
+  local player_data = global.player_data[player.index]
+
   ModuleGui.destroy_legacy(player)
   ModuleGui.destroy(player)
 
@@ -56,7 +56,7 @@ function ModuleGui.create(player)
     direction = "vertical",
     --handler = { [defines.events.on_gui_click] = ModuleGui.on_gui_click  },
     children = {
-      ModuleGui.create_module_table(player),
+      ModuleGui.create_module_table(player, player_data),
       {
         type = "label",
         caption = {"mis-gui.info"},

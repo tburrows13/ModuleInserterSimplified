@@ -27,7 +27,7 @@ local function get_recipe(entity)
 end
 
 local function check_module_allowed(module, entity, player)
-  if module:sub(1, 5) == "empty" then return true end
+  if module == "remove-modules" then return true end
 
   -- Don't print warning if no module inventory
   local module_inventory_size = get_property(entity, "prototype").module_inventory_size
@@ -65,7 +65,7 @@ local function insert_into_entity(module, entity, player, surface)
   if entity.type == "entity-ghost" then
     local space_in_inv = entity.ghost_prototype.module_inventory_size
     if space_in_inv and space_in_inv > 0 then
-      if module:sub(1, 5) == "empty" then
+      if module == "remove-modules" then
         entity.item_requests = {}
       else
         script.raise_event(on_module_inserted, {modules = {[module] = space_in_inv}, player = player, entity = entity})
@@ -96,7 +96,7 @@ local function insert_into_entity(module, entity, player, surface)
       end
     end
   end
-  if count == 0 or module:sub(1, 5) == "empty" then
+  if count == 0 or module == "remove-modules" then
     return
   end
   script.raise_event(on_module_inserted, {modules = {[module] = count}, player = player, entity = entity})
@@ -118,7 +118,7 @@ end
 local function insert_single_into_entity(module, entity, player, surface, allowed_with_recipe)
   if not check_module_allowed(module, entity, player) then return end
 
-  if module:sub(1, 5) == "empty" then
+  if module == "remove-modules" then
     if entity.type == "entity-ghost" then return end
     -- Remove a single module
     local module_inventory = entity.get_module_inventory()
