@@ -47,7 +47,7 @@ function ModuleGui.create(player)
   local player_data = global.player_data[player.index]
 
   ModuleGui.destroy_legacy(player)
-  ModuleGui.destroy(player)
+  ModuleGui.destroy(player, player_data)
 
   local elems = gui.add(player.gui.screen, {
     type = "frame",
@@ -65,15 +65,14 @@ function ModuleGui.create(player)
     }
   })
 
-  local window_height, tool_window_height = 232, 92  -- easier to just hardcode it
-  local offset = (window_height + tool_window_height + 10) * player.display_scale
-  elems.mis_frame.location = {x = 5, y = (player.display_resolution.height - offset)}
+  elems.mis_frame.location = player_data.gui_position
 
 end
 
-function ModuleGui.destroy(player)
+function ModuleGui.destroy(player, player_data)
   local mis_frame = player.gui.screen.mis_frame
   if mis_frame then
+    player_data.gui_position = mis_frame.location
     mis_frame.destroy()
   end
 end

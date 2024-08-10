@@ -86,10 +86,14 @@ local function generate_player_data(player, old_player_data)
     end
   end
 
+  -- Calculate starting GUI location
+  local offset = 600 * player.display_scale
+  local starting_location = {x = 5, y = (player.display_resolution.height - offset)}
+
   global.player_data[player.index] = {
     elems = old_player_data.elems,
     modules_enabled = modules_enabled,
-    tiers_between_empty = 100,  -- Effectively disabling this feature
+    gui_position = starting_location
   }
 
   for _, technology in pairs(player.force.technologies) do
