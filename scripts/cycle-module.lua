@@ -83,6 +83,7 @@ function CycleModule.set_cursor_module(player, module)
   cursor_stack.label = label and label or module
   global.players_last_module[player.index] = module
 
+  ModuleGui.create(player)  -- Refresh module GUI highlights
 end
 
 CycleModule.events = {

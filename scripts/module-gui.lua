@@ -20,7 +20,9 @@ function ModuleGui.create_module_table(player, player_data)
       local module = tier_list[i]
       if module then
         local style = "slot_button"
-        if not player_data.modules_enabled[module.name] then
+        if module.name == player.cursor_stack.name:sub(12) then
+          style = "yellow_slot_button"
+        elseif not player_data.modules_enabled[module.name] then
           style = "red_slot_button"
         end
         table.insert(module_table.children, {
@@ -28,12 +30,9 @@ function ModuleGui.create_module_table(player, player_data)
           style = style,
           name = module.name,
           sprite = "item/mis-insert-" .. module.name,
-          --state = modules_enabled[module.name],
-          --caption = "[item=" .. module.name .. "]",
           tooltip = { "", "\n\n[font=default-semibold]", module.localised_name, "[/font]\n", {"mis-gui.module-tooltip"} },
           tags = { name = module.name },
           handler = { [defines.events.on_gui_click] = ModuleGui.module_clicked },
-          --style_mods = { height = 24, right_margin = i == column_count and 0 or 12 },
         })
       else
         table.insert(module_table.children, { type = "empty-widget" })
@@ -87,16 +86,12 @@ end
 
 function ModuleGui.module_clicked(player, player_data, element, mouse_button)
   if mouse_button == defines.mouse_button_type.left then
-    CycleModule.set_cursor_module(player, element.name)
   elseif mouse_button == defines.mouse_button_type.right then
     local module_enabled = not player_data.modules_enabled[element.name]
     player_data.modules_enabled[element.name] = module_enabled
-    local style = "slot_button"
-    if not module_enabled then
-      style = "red_slot_button"
-    end
-    element.style = style
   end
+  CycleModule.set_cursor_module(player, element.name)
+
 end
 
 gui.add_handlers(ModuleGui,
