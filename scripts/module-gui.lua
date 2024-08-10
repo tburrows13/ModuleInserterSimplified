@@ -31,7 +31,7 @@ function ModuleGui.create_module_table(player)
           sprite = "item/" .. module.name,
           --state = modules_enabled[module.name],
           --caption = "[item=" .. module.name .. "]",
-          tooltip = { "", "\n[font=default-semibold]", module.localised_name, "[/font]" },
+          tooltip = { "", "\n\n[font=default-semibold]", module.localised_name, "[/font]\n", {"mis-gui.module-tooltip"} },
           tags = { name = module.name },
           handler = { [defines.events.on_gui_click] = ModuleGui.module_clicked },
           --style_mods = { height = 24, right_margin = i == column_count and 0 or 12 },
@@ -56,7 +56,12 @@ function ModuleGui.create(player)
     direction = "vertical",
     --handler = { [defines.events.on_gui_click] = ModuleGui.on_gui_click  },
     children = {
-      ModuleGui.create_module_table(player)
+      ModuleGui.create_module_table(player),
+      {
+        type = "label",
+        caption = {"mis-gui.info"},
+        style_mods = {single_line = false},
+      }
     }
   })
 
