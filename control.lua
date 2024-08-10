@@ -1,7 +1,6 @@
 local handler = require "__core__.lualib.event_handler"
 
 ModuleGui = require "__ModuleInserterSimplified__.scripts.module-gui"
---Gui = require "__ModuleInserterSimplified__.scripts.config-gui"
 Config = require "__ModuleInserterSimplified__.scripts.config-handler"
 CycleModule =   require "__ModuleInserterSimplified__.scripts.cycle-module"
 
@@ -14,6 +13,5 @@ handler.add_libraries{
   CycleModule,
   require "__ModuleInserterSimplified__.scripts.insert-module",
   ModuleGui,
-  --Gui,
   Config,
 }
