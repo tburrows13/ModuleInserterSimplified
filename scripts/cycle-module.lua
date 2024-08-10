@@ -22,7 +22,6 @@ local function cycle_module(player, direction)
   local selection_tool = player.cursor_stack
   if selection_tool and selection_tool.valid_for_read then
     if selection_tool.name:sub(1, 10) == "mis-insert" then
-      local prefix = selection_tool.name:sub(1, 11)
       local item = selection_tool.name:sub(12)
       local modules = global.modules
       local modules_length = #modules
@@ -39,11 +38,8 @@ local function cycle_module(player, direction)
       if not modules_enabled[next_module.name] then return end  -- No other modules to cycle to
 
       local next_module_name = next_module.name
-      local next_selection_tool = prefix .. next_module_name
-      selection_tool.set_stack(next_selection_tool)
-      local label = global.translations[player.index][next_selection_tool]
-      selection_tool.label = label and label or next_module_name
-      global.players_last_module[player.index] = next_module_name
+
+      CycleModule.set_cursor_module(player, next_module_name)
 
       control_conflict_warn(player)
     end
@@ -72,12 +68,20 @@ local function on_lua_shortcut(event)
     if not next_module or not game.item_prototypes[next_module] then
       next_module = global.modules[1].name  -- TODO: skip enabled modules?
     end
-    local next_selection_tool = "mis-insert-" .. next_module
-    cursor_stack.set_stack(next_selection_tool)
-    local label = global.translations[event.player_index][next_selection_tool]
-    cursor_stack.label = label and label or next_module
-    global.players_last_module[player.index] = next_module
+    CycleModule.set_cursor_module(player, next_module)
   end
+end
+
+function CycleModule.set_cursor_module(player, module)
+  local cursor_stack = player.cursor_stack
+
+  local selection_tool = "mis-insert-" .. module
+  -- Check if it exists
+  cursor_stack.set_stack(selection_tool)
+  local label = global.translations[player.index][selection_tool]
+  cursor_stack.label = label and label or module
+  global.players_last_module[player.index] = module
+
 end
 
 CycleModule.events = {
