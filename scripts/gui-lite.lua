@@ -1,7 +1,3 @@
-if ... ~= "__flib__.gui-lite" then
-  return require("__flib__.gui-lite")
-end
-
 --- Utilities for building GUIs and handling GUI events.
 --- ```lua
 --- local flib_gui = require("__flib__.gui-lite")
