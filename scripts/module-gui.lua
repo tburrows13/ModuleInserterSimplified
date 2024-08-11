@@ -109,7 +109,8 @@ local function on_player_cursor_stack_changed(event)
   if cursor_stack and cursor_stack.valid_for_read and cursor_stack.name:sub(1, 11) == "mis-insert-" then
     ModuleGui.create(player)
   else
-    ModuleGui.destroy(player)
+    local player_data = global.player_data[player.index]
+    ModuleGui.destroy(player, player_data)
   end
 end
 
