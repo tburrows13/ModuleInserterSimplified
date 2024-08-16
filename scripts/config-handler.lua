@@ -30,7 +30,9 @@ local function on_research_finished(event)
   local technology = event.research
   for _, player in pairs(technology.force.players) do
     Config.process_technology(technology, player.index)
-    ModuleGui.create(player)  -- Refresh module GUI highlights
+    if player.gui.screen.mis_frame then
+      ModuleGui.create(player)  -- Refresh module GUI highlights
+    end
   end
 end
 
