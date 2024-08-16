@@ -125,10 +125,13 @@ local function generate_global_data()
     local i, j = name:find("%-%d+$")  -- Finds "-5" at the end of the string
     if i then
       module_type = name:sub(1, i-1)
-      module_tier = tonumber(name:sub(i+1)) or 1  -- Don't use module.tier because Nullius starts at 0
+      module_tier = module.tier
+      if script.active_mods["nullius"] then
+        module_tier = tonumber(name:sub(i+1)) or 1  -- Don't use module.tier because Nullius starts at 0
+      end
     end
     if name:sub(1, 9) == "ee-super-" then
-      module_tier = 0
+      module_tier = -1
     end
     local tier_list = global.modules_by_tier[module_tier] or {}
     table.insert(tier_list, {name = name, type = module_type, tier = module_tier, localised_name = module.localised_name})
@@ -148,7 +151,7 @@ local function generate_global_data()
   end
 
   -- Add remove-modules to tier -1
-  global.modules_by_tier[-1] = {{name = "remove-modules", type = "empty", tier = -1, localised_name = {"item-name.remove-modules"}}}
+  global.modules_by_tier[-2] = {{name = "remove-modules", type = "empty", tier = -2, localised_name = {"item-name.remove-modules"}}}
 
   -- Flatten global.modules_by_tier into global.modules
   for _, tier_list in pairs(global.modules_by_tier) do
