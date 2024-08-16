@@ -32,7 +32,7 @@ local selection_tool_template = {
 }
 
 for name, prototype in pairs(data.raw.module) do
-  if prototype.subgroup == "py-alienlife-modules" or prototype.subgroup == "py-alienlife-numal" then goto continue end
+  if prototype.subgroup == "py-alienlife-modules" or prototype.subgroup == "py-alienlife-numal" or prototype.subgroup == "alien-hyper-module" then goto continue end
   local selection_tool = table.deepcopy(selection_tool_template)
   selection_tool.name = "mis-insert-" .. name
   selection_tool.icon = prototype.icon
