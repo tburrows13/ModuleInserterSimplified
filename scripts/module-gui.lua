@@ -63,6 +63,7 @@ function ModuleGui.create(player)
           {
             type = "frame",
             style = "filter_scroll_pane_background_frame",
+            style_mods = {minimal_height = 5},
             children = ModuleGui.create_module_table(player, player_data),
           },
           {
