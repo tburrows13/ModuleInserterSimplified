@@ -92,7 +92,9 @@ local function insert_into_entity(module, entity, player, surface)
         count = count - 1
       else
         local spilled = surface.spill_item_stack(entity.bounding_box.left_top, module_stack, true, player.force, false)
-        if spilled[1] then module_stack.clear() end
+        if spilled[1] or surface.name:sub(1, 4) == "bpsb" then  -- Blueprint Sandbox mod deletes spilled items instantly
+          module_stack.clear()
+        end
       end
     end
   end
@@ -129,7 +131,7 @@ local function insert_single_into_entity(module, entity, player, surface, allowe
       if module_stack and module_stack.valid_for_read then
         if module_stack.name ~= module then
           local spilled = surface.spill_item_stack(entity.bounding_box.left_top, module_stack, true, player.force, false)
-          if spilled[1] then
+          if spilled[1] or surface.name:sub(1, 4) == "bpsb" then
             module_stack.clear()
             break
           end
@@ -200,7 +202,8 @@ local function insert_single_into_entity(module, entity, player, surface, allowe
       if module_stack and module_stack.valid_for_read then
         if module_stack.name ~= module then
           local spilled = surface.spill_item_stack(entity.bounding_box.left_top, module_stack, true, player.force, false)
-          if spilled[1] then module_stack.clear()
+          if spilled[1] or surface.name:sub(1, 4) == "bpsb" then
+            module_stack.clear()
             space_in_inv = 1
             break
           end
@@ -238,7 +241,7 @@ local function insert_single_into_entity(module, entity, player, surface, allowe
         if module_stack and module_stack.valid_for_read then
           if module_stack.name ~= module then
             local spilled = surface.spill_item_stack(entity.bounding_box.left_top, module_stack, true, player.force, false)
-            if spilled[1] then
+            if spilled[1] or surface.name:sub(1, 4) == "bpsb" then
               module_stack.clear()
               space_in_inv = space_in_inv + 1
               break
