@@ -31,10 +31,8 @@ local selection_tool_template = {
   alt_reverse_entity_filter_mode = "whitelist",
 }
 
-local module_tiers = {}
 for name, prototype in pairs(data.raw.module) do
   if prototype.subgroup == "py-alienlife-modules" or prototype.subgroup == "py-alienlife-numal" then goto continue end
-  module_tiers[prototype.tier] = true
   local selection_tool = table.deepcopy(selection_tool_template)
   selection_tool.name = "mis-insert-" .. name
   selection_tool.icon = prototype.icon
