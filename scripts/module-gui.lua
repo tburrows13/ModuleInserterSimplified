@@ -12,7 +12,7 @@ function ModuleGui.create_module_table(player, player_data)
   local module_table = {
     type = "table",
     column_count = column_count,
-    style = "slot_table",
+    style = "filter_slot_table",
     children = {},
   }
   for _, tier_list in pairs(global.modules_by_tier) do
@@ -55,11 +55,22 @@ function ModuleGui.create(player)
     direction = "vertical",
     --handler = { [defines.events.on_gui_click] = ModuleGui.on_gui_click  },
     children = {
-      ModuleGui.create_module_table(player, player_data),
       {
-        type = "label",
-        caption = {"mis-gui.info"},
-        style_mods = {single_line = false},
+        type = "frame",
+        direction = "vertical",
+        style = "inside_shallow_frame_with_padding",
+        children = {
+          {
+            type = "frame",
+            style = "filter_scroll_pane_background_frame",
+            children = ModuleGui.create_module_table(player, player_data),
+          },
+          {
+            type = "label",
+            caption = {"mis-gui.info"},
+            style_mods = {single_line = false, top_padding = 10},
+          },
+        }
       }
     }
   })
