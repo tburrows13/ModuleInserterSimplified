@@ -20,7 +20,7 @@ function ModuleGui.create_module_table(player, player_data)
       local module = tier_list[i]
       if module then
         local style = "slot_button"
-        if module.name == player.cursor_stack.name:sub(12) then
+        if player.cursor_stack and player.cursor_stack.valid_for_read and module.name == player.cursor_stack.name:sub(12) then
           style = "yellow_slot_button"
         elseif not player_data.modules_enabled[module.name] then
           style = "red_slot_button"
