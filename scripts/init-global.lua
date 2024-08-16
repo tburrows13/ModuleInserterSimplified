@@ -87,8 +87,8 @@ local function generate_player_data(player, old_player_data)
   end
 
   -- Calculate starting GUI location
-  local offset = 600 * player.display_scale
-  local starting_location = {x = 5, y = (player.display_resolution.height - offset)}
+  local offset = 000 * player.display_scale
+  local starting_location = {x = 5, y = (player.display_resolution.height * player.display_scale - offset)}
 
   global.player_data[player.index] = {
     elems = old_player_data.elems,
