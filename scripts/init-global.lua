@@ -171,9 +171,9 @@ local function generate_global_data()
     generate_player_data(player, global.player_data[player.index])
   end
 
-  log(serpent.block(global.modules))
-  log(serpent.block(global.modules_by_name))
-  log(serpent.block(global.modules_by_tier))
+  --log(serpent.block(global.modules))
+  --log(serpent.block(global.modules_by_name))
+  --log(serpent.block(global.modules_by_tier))
 
   global.players_shift_scroll_warning = global.players_shift_scroll_warning or {}
   global.proxy_targets = global.proxy_targets or {}
