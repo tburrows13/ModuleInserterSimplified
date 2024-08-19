@@ -98,12 +98,12 @@ end
 
 function ModuleGui.module_clicked(player, player_data, element, mouse_button)
   if mouse_button == defines.mouse_button_type.left then
+    CycleModule.set_cursor_module(player, element.name)
   elseif mouse_button == defines.mouse_button_type.right then
     local module_enabled = not player_data.modules_enabled[element.name]
     player_data.modules_enabled[element.name] = module_enabled
+    ModuleGui.create(player)  -- Refresh module GUI highlights
   end
-  CycleModule.set_cursor_module(player, element.name)
-
 end
 
 gui.add_handlers(ModuleGui,

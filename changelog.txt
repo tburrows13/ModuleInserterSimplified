@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.0.1
+Date: 18 August 2024
+  Bugfixes:
+    - Fixed right-clicking on a module in the selection GUI would select it
+---------------------------------------------------------------------------------------------------
 Version: 2.0.0
 Date: 18 August 2024
   Features:
