@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.0.0
+Date: 18 August 2024
+  Features:
+    - Added new module selection GUI
+  Bugfixes:
+    - Fixed modules not being removed in Blueprint Sandboxes
+    - Fixed crash with Janky Quality
+    - Fixed GUI overflow with Alien Loot Economy
+---------------------------------------------------------------------------------------------------
 Version: 1.1.4
 Date: 15 June 2023
   Features:
