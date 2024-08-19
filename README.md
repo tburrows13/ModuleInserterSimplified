@@ -2,8 +2,9 @@
 
 # Module Inserter Simplified
 
-Click the shortcut button or press `Alt + M` to get the module inserter. Use `Shift + Scroll` to cycle between modules:
+Click the shortcut button or press `Alt + M` to get the module inserter. Select a module from the pop-up interface or use `Shift + Scroll` to cycle between modules:
 
+![Selection interface](https://assets-mod.factorio.com/assets/9f61ae97849b25b22600b0d6ba8e7d58dd4f0156.png)
 ![Cycle modules](https://github.com/tburrows13/ModuleInserterSimplified/raw/master/resources/cycle-modules.mp4)
 
 Click and drag the mouse to fill the selected machines with modules:
@@ -18,9 +19,8 @@ Shift-click and drag the mouse to clear module requests.
 Shift-right-click and drag the mouse to remove one module request from each machine.
 Use _Remove modules_ to remove all modules with left-click, and one module per machine with right-click.
 
-Click on the configuration button in the top-left corner whilst holding the module inserter to access the configuration window. Use of this feature is completely optional, but it can be useful to remove modules from the cycle that aren't being used.
+Right clicking on modules in the selection interface can be used to remove modules from the cycle that aren't being used.
 Modules will be automatically enabled when unlocked.
-![Configuration GUI](https://github.com/tburrows13/ModuleInserterSimplified/raw/master/resources/config-gui.png)
 
 When a module request is completed, the modules in that machine will be sorted.
 
