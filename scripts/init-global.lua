@@ -86,14 +86,10 @@ local function generate_player_data(player, old_player_data)
     end
   end
 
-  -- Calculate starting GUI location
-  local offset = 000 * player.display_scale
-  local starting_location = {x = 5, y = (player.display_resolution.height * player.display_scale - offset)}
-
   global.player_data[player.index] = {
     elems = old_player_data.elems,
     modules_enabled = modules_enabled,
-    gui_position = starting_location
+    gui_position = nil  -- player resolution can't be read in `on_player_created`, so set when needed the first time
   }
 
   for _, technology in pairs(player.force.technologies) do
@@ -203,11 +199,20 @@ local function on_player_created(event)
   generate_player_data(player)
 end
 
+local function on_player_display_resolution_changed(event)
+  local player = game.get_player(event.player_index)
+  local player_data = global.player_data[player.index]
+  ModuleGui.destroy_legacy(player)
+  ModuleGui.destroy(player, player_data)
+  player_data.gui_position = nil
+end
+
 InitGlobal.events = {
   [defines.events.on_string_translated] = on_string_translated,
   [defines.events.on_game_created_from_scenario] = generate_global_data,
   [defines.events.on_player_joined_game] = on_player_joined_game,
   [defines.events.on_player_created] = on_player_created,
+  [defines.events.on_player_display_resolution_changed] = on_player_display_resolution_changed,
 }
 
 return InitGlobal

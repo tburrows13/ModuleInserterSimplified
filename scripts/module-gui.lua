@@ -76,8 +76,12 @@ function ModuleGui.create(player)
     }
   })
 
+  if not player_data.gui_position then
+    -- Calculate starting GUI location
+    local offset = 550 * player.display_scale
+    player_data.gui_position = {x = 5, y = (player.display_resolution.height - offset)}
+  end
   elems.mis_frame.location = player_data.gui_position
-
 end
 
 function ModuleGui.destroy(player, player_data)
