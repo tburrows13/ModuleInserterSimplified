@@ -5,7 +5,7 @@ local ModuleGui = {}
 
 function ModuleGui.create_module_table(player, player_data)
   local column_count = 0
-  for _, tier_list in pairs(global.modules_by_tier) do
+  for _, tier_list in pairs(storage.modules_by_tier) do
     column_count = math.max(column_count, #tier_list)
   end
 
@@ -15,7 +15,7 @@ function ModuleGui.create_module_table(player, player_data)
     style = "filter_slot_table",
     children = {},
   }
-  for _, tier_list in pairs(global.modules_by_tier) do
+  for _, tier_list in pairs(storage.modules_by_tier) do
     for i = 1, column_count do
       local module = tier_list[i]
       if module then
@@ -43,7 +43,7 @@ function ModuleGui.create_module_table(player, player_data)
 end
 
 function ModuleGui.create(player)
-  local player_data = global.player_data[player.index]
+  local player_data = storage.player_data[player.index]
 
   ModuleGui.destroy_legacy(player)
   ModuleGui.destroy(player, player_data)
@@ -113,7 +113,7 @@ end
 gui.add_handlers(ModuleGui,
   function(event, handler)
     local player = game.players[event.player_index]
-    local player_data = global.player_data[event.player_index]
+    local player_data = storage.player_data[event.player_index]
     handler(player, player_data, event.element, event.button)
   end
 )
@@ -125,7 +125,7 @@ local function on_player_cursor_stack_changed(event)
   if cursor_stack and cursor_stack.valid_for_read and cursor_stack.name:sub(1, 11) == "mis-insert-" then
     ModuleGui.create(player)
   else
-    local player_data = global.player_data[player.index]
+    local player_data = storage.player_data[player.index]
     ModuleGui.destroy(player, player_data)
   end
 end

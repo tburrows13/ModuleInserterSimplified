@@ -1,7 +1,7 @@
 local CycleModule = {}
 
 local function control_conflict_warn(player)
-  local previous_warnings = global.players_shift_scroll_warning
+  local previous_warnings = storage.players_shift_scroll_warning
   if not previous_warnings[player.index] and player.input_method ~= defines.input_method.game_controller then
     player.print({"mis.control-conflict-warn"})
     previous_warnings[player.index] = true
@@ -23,11 +23,11 @@ local function cycle_module(player, direction)
   if selection_tool and selection_tool.valid_for_read then
     if selection_tool.name:sub(1, 10) == "mis-insert" then
       local item = selection_tool.name:sub(12)
-      local modules = global.modules
+      local modules = storage.modules
       local modules_length = #modules
-      local first_index = global.modules_by_name[item].index
+      local first_index = storage.modules_by_name[item].index
       local next_index = first_index
-      local modules_enabled = global.player_data[player.index].modules_enabled
+      local modules_enabled = storage.player_data[player.index].modules_enabled
 
       local next_module
       repeat
@@ -62,11 +62,11 @@ local function on_lua_shortcut(event)
   end
   local cleared = player.clear_cursor()
   if cleared then
-    if not (next_module and global.modules_by_name[next_module]) then
-      next_module = global.players_last_module[event.player_index]  -- Get selection tool from last used selection tool
+    if not (next_module and storage.modules_by_name[next_module]) then
+      next_module = storage.players_last_module[event.player_index]  -- Get selection tool from last used selection tool
     end
     if not next_module or not prototypes.item[next_module] then
-      next_module = global.modules[1].name  -- TODO: skip enabled modules?
+      next_module = storage.modules[1].name  -- TODO: skip enabled modules?
     end
     CycleModule.set_cursor_module(player, next_module)
   end
@@ -79,9 +79,9 @@ function CycleModule.set_cursor_module(player, module)
 
   -- Check if it exists
   cursor_stack.set_stack(selection_tool)
-  local label = global.translations[player.index][selection_tool]
+  local label = storage.translations[player.index][selection_tool]
   cursor_stack.label = label and label or module
-  global.players_last_module[player.index] = module
+  storage.players_last_module[player.index] = module
 
   ModuleGui.create(player)  -- Refresh module GUI highlights
 end

@@ -1,9 +1,9 @@
 local InsertModule = {}
 
 local function on_entity_destroyed(event)
-  local entity = global.proxy_targets[event.registration_number]
+  local entity = storage.proxy_targets[event.registration_number]
   if not (entity and entity.valid) then return end
-  global.proxy_targets[event.registration_number] = nil
+  storage.proxy_targets[event.registration_number] = nil
 
   local module_inventory = entity.get_module_inventory()
   if not module_inventory then return end
@@ -34,7 +34,7 @@ local function check_module_allowed(module, entity, player)
   if not module_inventory_size or module_inventory_size == 0 then return false end
 
   -- Check if allowed with recipe
-  local allowed_with_recipe = global.allowed_with_recipe[module]
+  local allowed_with_recipe = storage.allowed_with_recipe[module]
   local recipe = get_recipe(entity)
   local recipe_name = recipe and recipe.name
   if recipe_name and allowed_with_recipe and not allowed_with_recipe[recipe_name] then
@@ -46,7 +46,7 @@ local function check_module_allowed(module, entity, player)
   end
 
   -- Check if allowed with entity prototype
-  local allowed_in_entity = global.allowed_in_entity[module]
+  local allowed_in_entity = storage.allowed_in_entity[module]
   if not allowed_in_entity[get_property(entity, "name")] then
     local text = allowed_in_entity.limitation_message_key
     text[3] = get_property(entity, "localised_name")
@@ -112,7 +112,7 @@ local function insert_into_entity(module, entity, player, surface)
     raise_built = true
   }
   if request_proxy then
-    global.proxy_targets[script.register_on_entity_destroyed(request_proxy)] = entity
+    storage.proxy_targets[script.register_on_entity_destroyed(request_proxy)] = entity
   end
 
 end
@@ -273,7 +273,7 @@ local function insert_single_into_entity(module, entity, player, surface, allowe
       raise_built = true
     }
     if request_proxy then
-      global.proxy_targets[script.register_on_entity_destroyed(request_proxy)] = entity
+      storage.proxy_targets[script.register_on_entity_destroyed(request_proxy)] = entity
     end
   end
 end

@@ -2,7 +2,7 @@ Config = {}
 
 function Config.process_technology(technology, player_index, old_modules_enabled)
   old_modules_enabled = old_modules_enabled or {}
-  local player_data = global.player_data[player_index]
+  local player_data = storage.player_data[player_index]
   local modules_enabled = player_data.modules_enabled
 
   for _, effect in pairs(technology.effects) do
@@ -12,7 +12,7 @@ function Config.process_technology(technology, player_index, old_modules_enabled
         for _, product in pairs(recipe.products) do
           if product.type == "item" then
             local module_name = product.name
-            local unlocked_module = global.modules_by_name[module_name]
+            local unlocked_module = storage.modules_by_name[module_name]
             if unlocked_module and old_modules_enabled[module_name] ~= false then
               modules_enabled[module_name] = true
               if player_data.elems and player_data.elems[module_name] then

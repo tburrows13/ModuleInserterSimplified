@@ -18,17 +18,17 @@ local function request_translations(player)
   for i, request_id in pairs(request_ids) do
     translation_requests[request_id] = translation_names[i]
   end
-  global.translation_requests[player.index] = translation_requests
+  storage.translation_requests[player.index] = translation_requests
 end
 
 local function on_string_translated(event)
   if not event.translated then return end
   local player_index = event.player_index
-  local translation_requests = global.translation_requests[player_index]
+  local translation_requests = storage.translation_requests[player_index]
   if not translation_requests or not translation_requests[event.id] then return end
   local name = translation_requests[event.id]
 
-  local translations = global.translations
+  local translations = storage.translations
   translations[player_index] = translations[player_index] or {}
   translations[player_index][name] = event.result
 end
@@ -75,7 +75,7 @@ local function generate_player_data(player, old_player_data)
   if not old_player_data then old_player_data = {} end
   local modules_enabled = old_player_data.modules_enabled or {}
   local old_modules_enabled = util.copy(modules_enabled)
-  for name, module in pairs(global.modules_by_name) do
+  for name, module in pairs(storage.modules_by_name) do
     if modules_enabled[name] == nil then
       -- Apply default enabled state
       if module.tier == 1 or module.type == "empty" then
@@ -86,7 +86,7 @@ local function generate_player_data(player, old_player_data)
     end
   end
 
-  global.player_data[player.index] = {
+  storage.player_data[player.index] = {
     elems = old_player_data.elems,
     modules_enabled = modules_enabled,
     gui_position = nil  -- player resolution can't be read in `on_player_created`, so set when needed the first time
@@ -104,16 +104,16 @@ local function generate_global_data()
   local selection_tools = prototypes.get_item_filtered({{filter = "type", type = "selection-tool"}})
   local entities = prototypes.get_item_filtered({{filter = "type", type = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"}}})
 
-  global.allowed_with_recipe = {}  -- dict(module_name -> dict(recipe_name -> bool)))
-  global.allowed_in_entity = {}  -- dict(module_name -> dict(entity_name -> bool)))
+  storage.allowed_with_recipe = {}  -- dict(module_name -> dict(recipe_name -> bool)))
+  storage.allowed_in_entity = {}  -- dict(module_name -> dict(entity_name -> bool)))
 
   -- Type module: {name, type, tier, enabled, localised_name, index} (name = type + tier)
-  global.modules = {}  -- array(<module>)
-  global.modules_by_tier = {}  -- dict(tier -> array(<module>))
-  global.modules_by_name = {}  -- dict(name -> <module>)
+  storage.modules = {}  -- array(<module>)
+  storage.modules_by_tier = {}  -- dict(tier -> array(<module>))
+  storage.modules_by_name = {}  -- dict(name -> <module>)
 
 
-  -- Initial pass, generate global.modules_by_tier
+  -- Initial pass, generate storage.modules_by_tier
   for name, module in pairs(modules) do
     if not selection_tools["mis-insert-" .. name] then goto continue end
     local module_type = name
@@ -129,65 +129,65 @@ local function generate_global_data()
     if name:sub(1, 9) == "ee-super-" then
       module_tier = -1
     end
-    local tier_list = global.modules_by_tier[module_tier] or {}
+    local tier_list = storage.modules_by_tier[module_tier] or {}
     table.insert(tier_list, {name = name, type = module_type, tier = module_tier, localised_name = module.localised_name})
-    global.modules_by_tier[module_tier] = tier_list
+    storage.modules_by_tier[module_tier] = tier_list
 
     -- Compute limitations for each module
-    global.allowed_with_recipe[name] = generate_allowed_with_recipe(module)
-    global.allowed_in_entity[name] = generate_allowed_in_entity(module, entities)
+    storage.allowed_with_recipe[name] = generate_allowed_with_recipe(module)
+    storage.allowed_in_entity[name] = generate_allowed_in_entity(module, entities)
     ::continue::
   end
 
-  if global.modules_by_tier[0] then
+  if storage.modules_by_tier[0] then
     -- Move cheat modules from tier 0 to tier n+1
-    local number_of_tiers = #global.modules_by_tier
-    global.modules_by_tier[number_of_tiers + 1] = global.modules_by_tier[0]
-    global.modules_by_tier[0] = nil
+    local number_of_tiers = #storage.modules_by_tier
+    storage.modules_by_tier[number_of_tiers + 1] = storage.modules_by_tier[0]
+    storage.modules_by_tier[0] = nil
   end
 
   -- Add remove-modules to tier -1
-  global.modules_by_tier[-2] = {{name = "remove-modules", type = "empty", tier = -2, localised_name = {"item-name.remove-modules"}}}
+  storage.modules_by_tier[-2] = {{name = "remove-modules", type = "empty", tier = -2, localised_name = {"item-name.remove-modules"}}}
 
-  -- Flatten global.modules_by_tier into global.modules
-  for _, tier_list in pairs(global.modules_by_tier) do
+  -- Flatten storage.modules_by_tier into storage.modules
+  for _, tier_list in pairs(storage.modules_by_tier) do
     for _, module in pairs(tier_list) do
-      table.insert(global.modules, module)
+      table.insert(storage.modules, module)
     end
   end
 
   -- Generate lookup dict to get module index from name
-  for i, module in pairs(global.modules) do
+  for i, module in pairs(storage.modules) do
     module.index = i
-    global.modules_by_name[module.name] = module
+    storage.modules_by_name[module.name] = module
   end
 
-  global.player_data = global.player_data or {}
+  storage.player_data = storage.player_data or {}
   for _, player in pairs(game.players) do
-    generate_player_data(player, global.player_data[player.index])
+    generate_player_data(player, storage.player_data[player.index])
   end
 
-  --log(serpent.block(global.modules))
-  --log(serpent.block(global.modules_by_name))
-  --log(serpent.block(global.modules_by_tier))
+  --log(serpent.block(storage.modules))
+  --log(serpent.block(storage.modules_by_name))
+  --log(serpent.block(storage.modules_by_tier))
 
-  global.players_shift_scroll_warning = global.players_shift_scroll_warning or {}
-  global.proxy_targets = global.proxy_targets or {}
+  storage.players_shift_scroll_warning = storage.players_shift_scroll_warning or {}
+  storage.proxy_targets = storage.proxy_targets or {}
 
-  global.translations = {}
-  global.translation_requests = {}
+  storage.translations = {}
+  storage.translation_requests = {}
   for _, player in pairs(game.connected_players) do
     request_translations(player)
   end
 end
 
-InitGlobal.on_init =  function()
+Initstorage.on_init =  function()
   generate_global_data()
-  global.players_last_module = {}
-  global.proxy_targets = {}
+  storage.players_last_module = {}
+  storage.proxy_targets = {}
 end
 
-InitGlobal.on_configuration_changed = generate_global_data
+Initstorage.on_configuration_changed = generate_global_data
 
 local function on_player_joined_game(event)
   local player = game.get_player(event.player_index)
@@ -201,13 +201,13 @@ end
 
 local function on_player_display_resolution_changed(event)
   local player = game.get_player(event.player_index)
-  local player_data = global.player_data[player.index]
+  local player_data = storage.player_data[player.index]
   ModuleGui.destroy_legacy(player)
   ModuleGui.destroy(player, player_data)
   player_data.gui_position = nil
 end
 
-InitGlobal.events = {
+Initstorage.events = {
   [defines.events.on_string_translated] = on_string_translated,
   [defines.events.on_game_created_from_scenario] = generate_global_data,
   [defines.events.on_player_joined_game] = on_player_joined_game,
