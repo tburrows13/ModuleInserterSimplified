@@ -32,14 +32,9 @@ data:extend{
     associated_control_input = "mis-give-module-inserter",
     --technology_to_unlock = "construction-robotics",
     style = "green",
-    icon =
-    {
-      filename = "__ModuleInserterSimplified__/graphics/module-inserter-x32-white.png",
-      priority = "extra-high-no-scale",
-      size = 32,
-      scale = 0.5,
-      mipmap_count = 1,
-      flags = {"gui-icon"}
-    },
+    icon = "__ModuleInserterSimplified__/graphics/module-inserter-x32-white.png",
+    icon_size = 32,
+    small_icon = "__ModuleInserterSimplified__/graphics/module-inserter-x32-white.png",
+    small_icon_size = 32,
   },
 }
