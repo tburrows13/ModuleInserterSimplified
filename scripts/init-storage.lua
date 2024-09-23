@@ -1,6 +1,6 @@
 local util = require "util"
 
-local InitGlobal = {}
+local InitStorage = {}
 
 local function request_translations(player)
   local selection_tools = prototypes.get_item_filtered({{filter = "type", type = "selection-tool"}})
@@ -181,13 +181,13 @@ local function generate_global_data()
   end
 end
 
-Initstorage.on_init =  function()
+InitStorage.on_init =  function()
   generate_global_data()
   storage.players_last_module = {}
   storage.proxy_targets = {}
 end
 
-Initstorage.on_configuration_changed = generate_global_data
+InitStorage.on_configuration_changed = generate_global_data
 
 local function on_player_joined_game(event)
   local player = game.get_player(event.player_index)
@@ -207,7 +207,7 @@ local function on_player_display_resolution_changed(event)
   player_data.gui_position = nil
 end
 
-Initstorage.events = {
+InitStorage.events = {
   [defines.events.on_string_translated] = on_string_translated,
   [defines.events.on_game_created_from_scenario] = generate_global_data,
   [defines.events.on_player_joined_game] = on_player_joined_game,
@@ -215,4 +215,4 @@ Initstorage.events = {
   [defines.events.on_player_display_resolution_changed] = on_player_display_resolution_changed,
 }
 
-return InitGlobal
+return InitStorage
