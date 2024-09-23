@@ -100,7 +100,7 @@ local function generate_player_data(player, old_player_data)
 end
 
 local function generate_global_data()
-  local modules = prototypes.get_item_filtered({{filter = "type", type = "module"}, {filter = "flag", flag = "hidden", mode = "and", invert = true}})
+  local modules = prototypes.get_item_filtered({{filter = "type", type = "module"}, {filter = "hidden", mode = "and", invert = true}})
   local selection_tools = prototypes.get_item_filtered({{filter = "type", type = "selection-tool"}})
   local entities = prototypes.get_item_filtered({{filter = "type", type = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"}}})
 
