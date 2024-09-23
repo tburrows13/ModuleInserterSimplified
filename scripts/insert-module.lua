@@ -1,6 +1,6 @@
 local InsertModule = {}
 
-local function on_entity_destroyed(event)
+local function on_object_destroyed(event)
   local entity = storage.proxy_targets[event.registration_number]
   if not (entity and entity.valid) then return end
   storage.proxy_targets[event.registration_number] = nil
@@ -112,7 +112,7 @@ local function insert_into_entity(module, entity, player, surface)
     raise_built = true
   }
   if request_proxy then
-    storage.proxy_targets[script.register_on_entity_destroyed(request_proxy)] = entity
+    storage.proxy_targets[script.register_on_object_destroyed(request_proxy)] = entity
   end
 
 end
@@ -273,7 +273,7 @@ local function insert_single_into_entity(module, entity, player, surface, allowe
       raise_built = true
     }
     if request_proxy then
-      storage.proxy_targets[script.register_on_entity_destroyed(request_proxy)] = entity
+      storage.proxy_targets[script.register_on_object_destroyed(request_proxy)] = entity
     end
   end
 end
@@ -334,7 +334,7 @@ end
 
 
 InsertModule.events = {
-  [defines.events.on_entity_destroyed] = on_entity_destroyed,
+  [defines.events.on_object_destroyed] = on_object_destroyed,
   [defines.events.on_player_selected_area] = function(event) insert_modules(event) end,
   [defines.events.on_player_reverse_selected_area] = function(event) insert_modules(event, true) end,
   [defines.events.on_player_alt_selected_area] = on_player_alt_selected_area,
