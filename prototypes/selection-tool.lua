@@ -10,26 +10,30 @@ local selection_tool_template = {
   hidden = true,
   draw_label_for_cursor_render = true,
   stack_size = 1,
-  selection_color = { r = 0, g = 1, b = 0 },
-  alt_selection_color = { r = 1, g = 0, b = 0 },
-  reverse_selection_color = { r = 0.2, g = 0.8, b = 0.3 },
-  alt_reverse_selection_color = { r = 1, g = 0.3, b = 0.2 },
-  selection_mode = {"same-force", "any-entity"},
-  alt_selection_mode = {"same-force", "any-entity"},
-  reverse_selection_mode = {"same-force", "any-entity"},
-  alt_reverse_selection_mode = {"same-force", "any-entity"},
-  selection_cursor_box_type = "copy",  -- Green
-  alt_selection_cursor_box_type = "not-allowed",  -- Red
-  reverse_selection_cursor_box_type = "copy",  -- Green
-  alt_reverse_selection_cursor_box_type = "not-allowed",  -- Red
-  entity_type_filters = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"},--, "item-request-proxy"},
-  entity_filter_mode = "whitelist",
-  alt_entity_type_filters = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"},--, "item-request-proxy"},
-  alt_entity_filter_mode = "whitelist",
-  reverse_entity_type_filters = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"},--, "item-request-proxy"},
-  reverse_entity_filter_mode = "whitelist",
-  alt_reverse_entity_type_filters = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"},--, "item-request-proxy"},
-  alt_reverse_entity_filter_mode = "whitelist",
+  select = {
+    border_color = { r = 0, g = 1, b = 0 },
+    cursor_box_type = "copy",  -- Green
+    mode = {"same-force", "any-entity"},
+    entity_type_filters = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"},--, "item-request-proxy"},
+  },
+  alt_select = {
+    border_color = { r = 1, g = 0, b = 0 },
+    cursor_box_type = "not-allowed",  -- Red
+    mode = {"same-force", "any-entity"},
+    entity_type_filters = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"},--, "item-request-proxy"},
+  },
+  reverse_select = {
+    border_color = { r = 0.2, g = 0.8, b = 0.3 },
+    cursor_box_type = "copy",  -- Green
+    mode = {"same-force", "any-entity"},
+    entity_type_filters = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"},--, "item-request-proxy"},
+  },
+  alt_reverse_select = {
+    border_color = { r = 1, g = 0.3, b = 0.2 },
+    cursor_box_type = "not-allowed",  -- Red
+    mode = {"same-force", "any-entity"},
+    entity_type_filters = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"},--, "item-request-proxy"},
+  },
 }
 
 for name, prototype in pairs(data.raw.module) do
