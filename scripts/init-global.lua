@@ -3,7 +3,7 @@ local util = require "util"
 local InitGlobal = {}
 
 local function request_translations(player)
-  local selection_tools = game.get_filtered_item_prototypes({{filter = "type", type = "selection-tool"}})
+  local selection_tools = prototypes.get_item_filtered({{filter = "type", type = "selection-tool"}})
   local translations = {}
   local translation_names = {}
   for name, selection_tool in pairs(selection_tools) do
@@ -100,9 +100,9 @@ local function generate_player_data(player, old_player_data)
 end
 
 local function generate_global_data()
-  local modules = game.get_filtered_item_prototypes({{filter = "type", type = "module"}, {filter = "flag", flag = "hidden", mode = "and", invert = true}})
-  local selection_tools = game.get_filtered_item_prototypes({{filter = "type", type = "selection-tool"}})
-  local entities = game.get_filtered_entity_prototypes({{filter = "type", type = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"}}})
+  local modules = prototypes.get_item_filtered({{filter = "type", type = "module"}, {filter = "flag", flag = "hidden", mode = "and", invert = true}})
+  local selection_tools = prototypes.get_item_filtered({{filter = "type", type = "selection-tool"}})
+  local entities = prototypes.get_item_filtered({{filter = "type", type = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"}}})
 
   global.allowed_with_recipe = {}  -- dict(module_name -> dict(recipe_name -> bool)))
   global.allowed_in_entity = {}  -- dict(module_name -> dict(entity_name -> bool)))

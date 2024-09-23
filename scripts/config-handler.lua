@@ -7,7 +7,7 @@ function Config.process_technology(technology, player_index, old_modules_enabled
 
   for _, effect in pairs(technology.effects) do
     if effect.type == "unlock-recipe" then
-      local recipe = game.recipe_prototypes[effect.recipe]
+      local recipe = prototypes.recipe[effect.recipe]
       if recipe then
         for _, product in pairs(recipe.products) do
           if product.type == "item" then

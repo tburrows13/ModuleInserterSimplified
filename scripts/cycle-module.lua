@@ -65,7 +65,7 @@ local function on_lua_shortcut(event)
     if not (next_module and global.modules_by_name[next_module]) then
       next_module = global.players_last_module[event.player_index]  -- Get selection tool from last used selection tool
     end
-    if not next_module or not game.item_prototypes[next_module] then
+    if not next_module or not prototypes.item[next_module] then
       next_module = global.modules[1].name  -- TODO: skip enabled modules?
     end
     CycleModule.set_cursor_module(player, next_module)
