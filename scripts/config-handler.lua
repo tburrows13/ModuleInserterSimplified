@@ -5,7 +5,7 @@ function Config.process_technology(technology, player_index, old_modules_enabled
   local player_data = storage.player_data[player_index]
   local modules_enabled = player_data.modules_enabled
 
-  for _, effect in pairs(technology.effects) do
+  for _, effect in pairs(technology.prototype.effects) do
     if effect.type == "unlock-recipe" then
       local recipe = prototypes.recipe[effect.recipe]
       if recipe then
