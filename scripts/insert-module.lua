@@ -85,17 +85,26 @@ local function insert_into_entity(module, entity, player, surface)
   local count = #module_inventory
   if count == 0 then return end
 
+  local in_inventory = {}
+  local inventory_index = module_inventory.index
   for i = 1, count do
     local module_stack = module_inventory[i]
     if module_stack and module_stack.valid_for_read then
-      if module_stack.name == module then
-        count = count - 1
-      else
-        local spilled = surface.spill_item_stack(entity.bounding_box.left_top, module_stack, true, player.force, false)
+      if module_stack.name ~= module then
+        local spilled = surface.spill_item_stack{
+          position = entity.bounding_box.left_top,
+          stack = module_stack,
+          enable_looted = true,
+          force = player.force,
+          allow_belts = false,
+        }
         if spilled[1] or surface.name:sub(1, 4) == "bpsb" then  -- Blueprint Sandbox mod deletes spilled items instantly
           module_stack.clear()
         end
+        table.insert(in_inventory, {inventory = inventory_index, stack = i-1})  -- 0 indexed :(
       end
+    else
+      table.insert(in_inventory, {inventory = inventory_index, stack = i-1})  -- 0 indexed :(
     end
   end
   if count == 0 or module == "remove-modules" then
@@ -108,7 +117,14 @@ local function insert_into_entity(module, entity, player, surface)
     force = entity.force,
     player = player,
     target = entity,
-    modules = {[module] = count},
+    modules = {
+      {
+        id = {name = module, quality = "normal"},
+        items = {
+          in_inventory = in_inventory
+        }
+      }
+    },
     raise_built = true
   }
   if request_proxy then
