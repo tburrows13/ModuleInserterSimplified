@@ -62,8 +62,8 @@ function ModuleGui.create(player)
         children = {
           {
             type = "frame",
-            style = "filter_scroll_pane_background_frame",
-            style_mods = {minimal_height = 5},
+            style = "slot_button_deep_frame",
+            style_mods = {minimal_height = 5, minimal_width = 280},
             children = ModuleGui.create_module_table(player, player_data),
           },
           {
