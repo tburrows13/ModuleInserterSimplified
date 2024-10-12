@@ -59,15 +59,23 @@ local function check_module_allowed(module, entity, player)
   return true
 end
 
-local function insert_into_entities_in_area(target_module, area, player, surface)
-  -- Create an upgrade planner and apply to area
-  local inventory = game.create_inventory(1)
-  inventory.insert{name = "upgrade-planner"}
-  local upgrade_planner = inventory[1]
-
-  if target_module == "remove-modules" then
-    target_module = nil
+local function convert_item_requests(requests)
+  -- Convert list of dicts to dict-by-name of dict-by-quality of count
+  local converted = {}
+  for _, request in pairs(requests) do
+    local name = request.name
+    local quality = request.quality
+    local count = request.count
+    if converted[name] then
+      converted[name][quality] = count
+    else
+      converted[name] = {[quality] = count}
+    end
   end
+  return converted
+end
+
+local function insert_into_entities_in_area(target_module, area, player, surface, upgrade_planner)
   for i, module in pairs(storage.modules) do
     if module.name ~= "remove-modules" then  -- "remove-modules" is a dummy item - don't add it. This index will handle empty module slots
       upgrade_planner.set_mapper(i, "from", {type = "item", name = module.name})
@@ -83,8 +91,49 @@ local function insert_into_entities_in_area(target_module, area, player, surface
   }
 end
 
-local function insert_single_into_entity(module, entity, player, surface, allowed_with_recipe)
-  if not check_module_allowed(module, entity, player) then return end
+local function insert_single_into_entities(target_module, entities, player, surface, upgrade_planner)
+  for _, entity in pairs(entities) do
+    local inventory_size
+    local correct_modules_in_inventory = 0
+    local requests
+
+    if entity.type == "entity-ghost" then
+      inventory_size = entity.ghost_prototype.module_inventory_size
+      if inventory_size == 0 then goto continue end
+      requests = convert_item_requests(entity.item_requests or {})
+
+    else
+      -- Entity is not ghost
+      local module_inventory = entity.get_module_inventory()
+      inventory_size = #module_inventory
+      if inventory_size == 0 then goto continue end
+
+      -- If inventory is full of 'module', return
+      correct_modules_in_inventory = module_inventory.get_item_count(target_module)
+      if correct_modules_in_inventory == inventory_size then goto continue end
+      local request_proxy = entity.surface.find_entity("item-request-proxy", entity.position)
+      requests = convert_item_requests(request_proxy and request_proxy.item_requests or {})
+    end
+
+    local correct_modules_and_requests = correct_modules_in_inventory + (requests[target_module] and requests[target_module]["normal"] or 0)
+    if correct_modules_and_requests == inventory_size then goto continue end
+
+    for i, module in pairs(storage.modules) do
+      if module.name ~= "remove-modules" then  -- "remove-modules" is a dummy item - don't add it. This index will handle empty module slots
+        upgrade_planner.set_mapper(i, "from", {type = "item", name = module.name})
+      end
+      upgrade_planner.set_mapper(i, "to", {type = "item", name = target_module, count = correct_modules_and_requests + 1})
+    end
+
+    surface.upgrade_area{
+      area = entity.bounding_box,
+      force = player.force,
+      player = player,
+      item = upgrade_planner,
+    }
+    ::continue::
+  end
+  do return end
 
   if module == "remove-modules" then
     if entity.type == "entity-ghost" then return end
@@ -106,142 +155,6 @@ local function insert_single_into_entity(module, entity, player, surface, allowe
     end
     return
   end
-
-  if entity.type == "entity-ghost" then
-    local space_in_inv = entity.ghost_prototype.module_inventory_size
-    if not space_in_inv or space_in_inv == 0 then return end
-
-    local requests = entity.item_requests
-
-    if requests[module] and requests[module] >= space_in_inv then
-      -- Already full with the correct module, so cut down to what actually fits
-      entity.item_requests = {[module] = space_in_inv}
-      return
-    end
-
-    -- Reduce requests so that there is space for at least one module
-    local request_count = 0
-    for _, count in pairs(requests) do
-      request_count = request_count + count
-    end
-    local space_in_req = space_in_inv - request_count  -- Can be negative
-    if space_in_req <= 0 then
-      -- Remove requests until request_count < space_in_inv
-      local diff = space_in_req + 1
-      for name, count in pairs(requests) do
-        if name ~= module then
-          local to_subtract = math.min(diff, count)
-          requests[name] = count - to_subtract
-          diff = diff - to_subtract
-          request_count = request_count - to_subtract
-          if requests[name] < 0 then error() end
-          if requests[name] == 0 then requests[name] = nil end
-          if diff == 0 then break end
-        end
-      end
-    end
-    requests[module] = requests[module] and requests[module] + 1 or 1
-    script.raise_event(on_module_inserted, {modules = {[module] = 1}, player = player, entity = entity})
-    entity.item_requests = requests
-    return
-  end
-
-  local request_proxy = entity.surface.find_entity("item-request-proxy", entity.position)
-  local requests = request_proxy and request_proxy.item_requests or {}
-  local module_inventory = entity.get_module_inventory()
-  local inventory_size = #module_inventory
-  if inventory_size == 0 then return end
-
-  -- (1) If inventory is full of 'module', return
-  -- (2) If inventory does not have a space, then make a space
-  -- (3) If request does not have a space, then make a space
-  -- (4) Create or update request proxy, request one
-
-  local modules_in_inventory = module_inventory.get_item_count(module)
-  if modules_in_inventory == inventory_size then return end
-
-  -- Ensure there is space for at least one module
-  local space_in_inv = module_inventory.count_empty_stacks()
-  if space_in_inv == 0 then
-    for i = 1, inventory_size do
-      local module_stack = module_inventory[i]
-      if module_stack and module_stack.valid_for_read then
-        if module_stack.name ~= module then
-          local spilled = surface.spill_item_stack(entity.bounding_box.left_top, module_stack, true, player.force, false)
-          if spilled[1] or surface.name:sub(1, 4) == "bpsb" then
-            module_stack.clear()
-            space_in_inv = 1
-            break
-          end
-        end
-      end
-    end
-    if space_in_inv == 0 then return end
-  end
-
-  -- Reduce requests so that there is space for at least one module
-  local request_count = 0
-  for _, count in pairs(requests) do
-    request_count = request_count + count
-  end
-  local space_in_req = space_in_inv - request_count  -- Can be negative
-  if space_in_req <= 0 then
-    -- Remove requests until request_count < space_in_inv
-    local diff = space_in_req + 1
-    for name, count in pairs(requests) do
-      if name ~= module then
-        local to_subtract = math.min(diff, count)
-        requests[name] = count - to_subtract
-        diff = diff - to_subtract
-        request_count = request_count - to_subtract
-        if requests[name] < 0 then error() end
-        if requests[name] == 0 then requests[name] = nil end
-        if diff == 0 then break end
-      end
-    end
-
-    if request_count >= space_in_inv then
-      -- All requests are of `module`. Try removing a different module item
-      for i = 1, inventory_size do
-        local module_stack = module_inventory[i]
-        if module_stack and module_stack.valid_for_read then
-          if module_stack.name ~= module then
-            local spilled = surface.spill_item_stack(entity.bounding_box.left_top, module_stack, true, player.force, false)
-            if spilled[1] or surface.name:sub(1, 4) == "bpsb" then
-              module_stack.clear()
-              space_in_inv = space_in_inv + 1
-              break
-            end
-          end
-        end
-      end
-      if request_count >= space_in_inv then
-        -- Must be `module`
-        requests[module] = requests[module] - math.min(diff, requests[module])
-      end
-    end
-  end
-
-  -- Add single request
-  if request_proxy then
-    requests[module] = requests[module] and requests[module] + 1 or 1
-    script.raise_event(on_module_inserted, {modules = {[module] = 1}, player = player, entity = entity})
-    request_proxy.item_requests = requests
-  else
-    script.raise_event(on_module_inserted, {modules = {[module] = 1}, player = player, entity = entity})
-    request_proxy = surface.create_entity{
-      name = "item-request-proxy",
-      position = entity.position,
-      force = entity.force,
-      player = player,
-      target = entity,
-      modules = {[module] = 1},
-      raise_built = true
-    }
-    if request_proxy then
-      storage.proxy_targets[script.register_on_object_destroyed(request_proxy)] = entity
-    end
-  end
 end
 
 local function insert_modules(event, insert_single)
@@ -251,16 +164,20 @@ local function insert_modules(event, insert_single)
   if prefix == "mis-insert-" then
     local player = game.get_player(event.player_index)
     local surface = event.surface
+    if item == "remove-modules" then
+      item = nil
+    end
+
+    local inventory = game.create_inventory(1)
+    inventory.insert{name = "upgrade-planner"}
+    local upgrade_planner = inventory[1]
 
     if insert_single then
-      for _, entity in pairs(event.entities) do
-        if insert_single then
-          insert_single_into_entity(item, entity, player, surface)
-        end
-      end
+      insert_single_into_entities(item, event.entities, player, surface, upgrade_planner)
     else
-      insert_into_entities_in_area(item, event.area, player, surface)
+      insert_into_entities_in_area(item, event.area, player, surface, upgrade_planner)
     end
+    inventory.destroy()
   end
 end
 
