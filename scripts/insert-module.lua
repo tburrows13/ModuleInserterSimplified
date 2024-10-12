@@ -7,7 +7,7 @@ local function on_object_destroyed(event)
 
   local module_inventory = entity.get_module_inventory()
   if not module_inventory then return end
-  module_inventory.sort_and_merge()
+  --module_inventory.sort_and_merge()
 end
 
 local function get_property(entity, property)
@@ -59,78 +59,25 @@ local function check_module_allowed(module, entity, player)
   return true
 end
 
-local function insert_into_entity(module, entity, player, surface)
-  if not check_module_allowed(module, entity, player) then return end
-
-  if entity.type == "entity-ghost" then
-    local space_in_inv = entity.ghost_prototype.module_inventory_size
-    if space_in_inv and space_in_inv > 0 then
-      if module == "remove-modules" then
-        entity.item_requests = {}
-      else
-        script.raise_event(on_module_inserted, {modules = {[module] = space_in_inv}, player = player, entity = entity})
-        entity.item_requests = {[module] = space_in_inv}
-      end
+local function insert_into_entities_in_area(target_module, area, player, surface)
+  -- Create an upgrade planner and apply to area
+  local inventory = game.create_inventory(1)
+  inventory.insert{name = "upgrade-planner"}
+  local upgrade_planner = inventory[1]
+  for i, module in pairs(storage.modules) do
+    if module.name ~= "remove-modules" then  -- "remove-modules" is a dummy item - don't add it. This index will handle empty module slots
+      upgrade_planner.set_mapper(i, "from", {type = "item", name = module.name})
     end
-    return
+    upgrade_planner.set_mapper(i, "to", {type = "item", name = target_module})
   end
 
-  local request_proxy = entity.surface.find_entity("item-request-proxy", entity.position)
-  if request_proxy then
-    request_proxy.destroy{raise_destroy = true}
-  end
-
-  local module_inventory = entity.get_module_inventory()
-  if not module_inventory then return end
-  local count = #module_inventory
-  if count == 0 then return end
-
-  local in_inventory = {}
-  local inventory_index = module_inventory.index
-  for i = 1, count do
-    local module_stack = module_inventory[i]
-    if module_stack and module_stack.valid_for_read then
-      if module_stack.name ~= module then
-        local spilled = surface.spill_item_stack{
-          position = entity.bounding_box.left_top,
-          stack = module_stack,
-          enable_looted = true,
-          force = player.force,
-          allow_belts = false,
-        }
-        if spilled[1] or surface.name:sub(1, 4) == "bpsb" then  -- Blueprint Sandbox mod deletes spilled items instantly
-          module_stack.clear()
-        end
-        table.insert(in_inventory, {inventory = inventory_index, stack = i-1})  -- 0 indexed :(
-      end
-    else
-      table.insert(in_inventory, {inventory = inventory_index, stack = i-1})  -- 0 indexed :(
-    end
-  end
-  if count == 0 or module == "remove-modules" then
-    return
-  end
-  script.raise_event(on_module_inserted, {modules = {[module] = count}, player = player, entity = entity})
-  request_proxy = surface.create_entity{
-    name = "item-request-proxy",
-    position = entity.position,
-    force = entity.force,
+  surface.upgrade_area{
+    area = area,
+    force = player.force,
     player = player,
-    target = entity,
-    modules = {
-      {
-        id = {name = module, quality = "normal"},
-        items = {
-          in_inventory = in_inventory
-        }
-      }
-    },
-    raise_built = true
+    item = upgrade_planner,
   }
-  if request_proxy then
-    storage.proxy_targets[script.register_on_object_destroyed(request_proxy)] = entity
-  end
-
+  do return end
 end
 
 local function insert_single_into_entity(module, entity, player, surface, allowed_with_recipe)
@@ -302,12 +249,14 @@ local function insert_modules(event, insert_single)
     local player = game.get_player(event.player_index)
     local surface = event.surface
 
-    for _, entity in pairs(event.entities) do
-      if insert_single then
-        insert_single_into_entity(item, entity, player, surface)
-      else
-        insert_into_entity(item, entity, player, surface)
+    if insert_single then
+      for _, entity in pairs(event.entities) do
+        if insert_single then
+          insert_single_into_entity(item, entity, player, surface)
+        end
       end
+    else
+      insert_into_entities_in_area(item, event.area, player, surface)
     end
   end
 end
