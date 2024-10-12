@@ -118,11 +118,14 @@ local function insert_single_into_entities(target_module, entities, player, surf
     local correct_modules_and_requests = correct_modules_in_inventory + (requests[target_module] and requests[target_module]["normal"] or 0)
     if correct_modules_and_requests == inventory_size then goto continue end
 
+    -- Add empty -> module at the start so it applies first
+    upgrade_planner.set_mapper(1, "to", {type = "item", name = target_module, count = correct_modules_and_requests + 1})
     for i, module in pairs(storage.modules) do
-      if module.name ~= "remove-modules" then  -- "remove-modules" is a dummy item - don't add it. This index will handle empty module slots
-        upgrade_planner.set_mapper(i, "from", {type = "item", name = module.name})
+      if module.name ~= "remove-modules" then
+        -- "remove-modules" is a dummy item - don't add it
+        upgrade_planner.set_mapper(i+1, "from", {type = "item", name = module.name})
+        upgrade_planner.set_mapper(i+1, "to", {type = "item", name = target_module, count = correct_modules_and_requests + 1})
       end
-      upgrade_planner.set_mapper(i, "to", {type = "item", name = target_module, count = correct_modules_and_requests + 1})
     end
 
     surface.upgrade_area{
