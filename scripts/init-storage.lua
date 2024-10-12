@@ -33,44 +33,6 @@ local function on_string_translated(event)
   translations[player_index][name] = event.result
 end
 
-local function generate_allowed_with_recipe(module)
-  -- Compute recipe limitations
-  local limitations = module.limitations
-  if limitations and next(limitations) then
-    local module_allowed_with_recipe = {}
-    for _, recipe in pairs(limitations) do
-      module_allowed_with_recipe[recipe] = true
-    end
-    module_allowed_with_recipe.limitation_message_key = {"item-limitation." .. module.limitation_message_key}
-    return module_allowed_with_recipe
-  end
-end
-
-local function generate_allowed_in_entity(module, entities)
-  -- Compute entity limitations
-  local module_effects = module.module_effects
-  local module_allowed_in_entity = {}
-  for _, entity in pairs(entities) do
-    local entity_allowed = true
-    local allowed_effects = entity.allowed_effects
-    if allowed_effects then
-      for effect, _ in pairs(module_effects) do
-        if not allowed_effects[effect] then
-          entity_allowed = false
-          break
-        end
-      end
-    else
-      entity_allowed = false
-    end
-    if entity_allowed then
-      module_allowed_in_entity[entity.name] = true
-    end
-  end
-  module_allowed_in_entity.limitation_message_key = {"inventory-restriction.cant-insert-module", module.localised_name}
-  return module_allowed_in_entity
-end
-
 local function generate_player_data(player, old_player_data)
   if not old_player_data then old_player_data = {} end
   local modules_enabled = old_player_data.modules_enabled or {}
@@ -102,10 +64,6 @@ end
 local function generate_global_data()
   local modules = prototypes.get_item_filtered({{filter = "type", type = "module"}, {filter = "hidden", mode = "and", invert = true}})
   local selection_tools = prototypes.get_item_filtered({{filter = "type", type = "selection-tool"}})
-  local entities = prototypes.get_item_filtered({{filter = "type", type = {"mining-drill", "furnace", "assembling-machine", "lab", "beacon", "rocket-silo"}}})
-
-  storage.allowed_with_recipe = {}  -- dict(module_name -> dict(recipe_name -> bool)))
-  storage.allowed_in_entity = {}  -- dict(module_name -> dict(entity_name -> bool)))
 
   -- Type module: {name, type, tier, enabled, localised_name, index} (name = type + tier)
   storage.modules = {}  -- array(<module>)
@@ -133,9 +91,6 @@ local function generate_global_data()
     table.insert(tier_list, {name = name, type = module_type, tier = module_tier, localised_name = module.localised_name})
     storage.modules_by_tier[module_tier] = tier_list
 
-    -- Compute limitations for each module
-    storage.allowed_with_recipe[name] = generate_allowed_with_recipe(module)
-    storage.allowed_in_entity[name] = generate_allowed_in_entity(module, entities)
     ::continue::
   end
 

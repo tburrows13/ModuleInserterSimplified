@@ -1,64 +1,5 @@
 local InsertModule = {}
 
-local function on_object_destroyed(event)
-  local entity = storage.proxy_targets[event.registration_number]
-  if not (entity and entity.valid) then return end
-  storage.proxy_targets[event.registration_number] = nil
-
-  local module_inventory = entity.get_module_inventory()
-  if not module_inventory then return end
-  --module_inventory.sort_and_merge()
-end
-
-local function get_property(entity, property)
-  if entity.name == "entity-ghost" then
-    return entity["ghost_" .. property]
-  end
-  return entity[property]
-end
-
-local function get_recipe(entity)
-  if entity.type == "assembling-machine"
-  or entity.type == "rocket-silo"
-  or entity.type == "furnace"
-  or (entity.type == "entity-ghost" and entity.ghost_type == "assembling-machine") then
-    return entity.get_recipe()
-  end
-end
-
-local function check_module_allowed(module, entity, player)
-  if module == "remove-modules" then return true end
-
-  -- Don't print warning if no module inventory
-  local module_inventory_size = get_property(entity, "prototype").module_inventory_size
-  if not module_inventory_size or module_inventory_size == 0 then return false end
-
-  -- Check if allowed with recipe
-  local allowed_with_recipe = storage.allowed_with_recipe[module]
-  local recipe = get_recipe(entity)
-  local recipe_name = recipe and recipe.name
-  if recipe_name and allowed_with_recipe and not allowed_with_recipe[recipe_name] then
-    player.create_local_flying_text{
-      text = allowed_with_recipe.limitation_message_key,
-      position = entity.position,
-    }
-    return false
-  end
-
-  -- Check if allowed with entity prototype
-  local allowed_in_entity = storage.allowed_in_entity[module]
-  if not allowed_in_entity[get_property(entity, "name")] then
-    local text = allowed_in_entity.limitation_message_key
-    text[3] = get_property(entity, "localised_name")
-    player.create_local_flying_text{
-      text = text,
-      position = entity.position,
-    }
-    return false
-  end
-  return true
-end
-
 local function convert_item_requests(requests)
   -- Convert list of dicts to dict-by-name of dict-by-quality of count
   local converted = {}
@@ -223,11 +164,10 @@ end
 
 
 InsertModule.events = {
-  [defines.events.on_object_destroyed] = on_object_destroyed,
   [defines.events.on_player_selected_area] = function(event) insert_modules(event) end,
   [defines.events.on_player_reverse_selected_area] = function(event) insert_modules(event, true) end,
   [defines.events.on_player_alt_selected_area] = on_player_alt_selected_area,
-  [defines.events.on_player_alt_reverse_selected_area] = on_player_alt_reverse_selected_area,
+  --[defines.events.on_player_alt_reverse_selected_area] = on_player_alt_reverse_selected_area,
 }
 
 return InsertModule
