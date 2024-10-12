@@ -33,6 +33,8 @@ local function insert_into_entities_in_area(target_module, quality, area, player
 end
 
 local function insert_single_into_entities(target_module, quality, entities, player, surface, upgrade_planner)
+  if not target_module then return end  -- If player tries to use "remove-modules" to remove 1 module TODO
+
   for _, entity in pairs(entities) do
     local inventory_size
     local correct_modules_in_inventory = 0
