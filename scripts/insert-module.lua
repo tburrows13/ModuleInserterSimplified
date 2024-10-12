@@ -75,12 +75,12 @@ local function convert_item_requests(requests)
   return converted
 end
 
-local function insert_into_entities_in_area(target_module, area, player, surface, upgrade_planner)
+local function insert_into_entities_in_area(target_module, quality, area, player, surface, upgrade_planner)
   for i, module in pairs(storage.modules) do
     if module.name ~= "remove-modules" then  -- "remove-modules" is a dummy item - don't add it. This index will handle empty module slots
       upgrade_planner.set_mapper(i, "from", {type = "item", name = module.name})
     end
-    upgrade_planner.set_mapper(i, "to", {type = "item", name = target_module})
+    upgrade_planner.set_mapper(i, "to", {type = "item", name = target_module, quality = quality})
   end
 
   surface.upgrade_area{
@@ -91,7 +91,7 @@ local function insert_into_entities_in_area(target_module, area, player, surface
   }
 end
 
-local function insert_single_into_entities(target_module, entities, player, surface, upgrade_planner)
+local function insert_single_into_entities(target_module, quality, entities, player, surface, upgrade_planner)
   for _, entity in pairs(entities) do
     local inventory_size
     local correct_modules_in_inventory = 0
@@ -109,22 +109,22 @@ local function insert_single_into_entities(target_module, entities, player, surf
       if inventory_size == 0 then goto continue end
 
       -- If inventory is full of 'module', return
-      correct_modules_in_inventory = module_inventory.get_item_count(target_module)
+      correct_modules_in_inventory = module_inventory.get_item_count({name = target_module, quality = quality})
       if correct_modules_in_inventory == inventory_size then goto continue end
       local request_proxy = entity.surface.find_entity("item-request-proxy", entity.position)
       requests = convert_item_requests(request_proxy and request_proxy.item_requests or {})
     end
 
-    local correct_modules_and_requests = correct_modules_in_inventory + (requests[target_module] and requests[target_module]["normal"] or 0)
+    local correct_modules_and_requests = correct_modules_in_inventory + (requests[target_module] and requests[target_module][quality] or 0)
     if correct_modules_and_requests == inventory_size then goto continue end
 
     -- Add empty -> module at the start so it applies first
-    upgrade_planner.set_mapper(1, "to", {type = "item", name = target_module, count = correct_modules_and_requests + 1})
+    upgrade_planner.set_mapper(1, "to", {type = "item", name = target_module, quality = quality, count = correct_modules_and_requests + 1})
     for i, module in pairs(storage.modules) do
       if module.name ~= "remove-modules" then
         -- "remove-modules" is a dummy item - don't add it
         upgrade_planner.set_mapper(i+1, "from", {type = "item", name = module.name})
-        upgrade_planner.set_mapper(i+1, "to", {type = "item", name = target_module, count = correct_modules_and_requests + 1})
+        upgrade_planner.set_mapper(i+1, "to", {type = "item", name = target_module, quality = quality, count = correct_modules_and_requests + 1})
       end
     end
 
@@ -162,6 +162,7 @@ end
 
 local function insert_modules(event, insert_single)
   local selection_tool = event.item
+  local quality = event.quality
   local prefix = selection_tool:sub(1, 11)
   local item = selection_tool:sub(12)
   if prefix == "mis-insert-" then
@@ -176,9 +177,9 @@ local function insert_modules(event, insert_single)
     local upgrade_planner = inventory[1]
 
     if insert_single then
-      insert_single_into_entities(item, event.entities, player, surface, upgrade_planner)
+      insert_single_into_entities(item, quality, event.entities, player, surface, upgrade_planner)
     else
-      insert_into_entities_in_area(item, event.area, player, surface, upgrade_planner)
+      insert_into_entities_in_area(item, quality, event.area, player, surface, upgrade_planner)
     end
     inventory.destroy()
   end

@@ -51,6 +51,7 @@ local function on_lua_shortcut(event)
   local player = game.get_player(event.player_index)
   local cursor_stack = player.cursor_stack
   local next_module
+  local next_quality = "normal"
   if cursor_stack and cursor_stack.valid_for_read then
     next_module = cursor_stack.name  -- Get selection tool from currently held module
   end
@@ -63,25 +64,27 @@ local function on_lua_shortcut(event)
   local cleared = player.clear_cursor()
   if cleared then
     if not (next_module and storage.modules_by_name[next_module]) then
-      next_module = storage.players_last_module[event.player_index]  -- Get selection tool from last used selection tool
+      local next_module_and_quality = storage.players_last_module[event.player_index]  -- Get selection tool from last used selection tool
+      next_module = next_module_and_quality and next_module_and_quality.name
+      next_quality = next_module_and_quality and next_module_and_quality.quality or "normal"
     end
     if not next_module or not prototypes.item[next_module] then
       next_module = storage.modules[1].name  -- TODO: skip enabled modules?
     end
-    CycleModule.set_cursor_module(player, next_module)
+    CycleModule.set_cursor_module(player, next_module, next_quality)
   end
 end
 
-function CycleModule.set_cursor_module(player, module)
+function CycleModule.set_cursor_module(player, module, quality)
   local cursor_stack = player.cursor_stack
 
   local selection_tool = "mis-insert-" .. module
 
   -- Check if it exists
-  cursor_stack.set_stack(selection_tool)
+  cursor_stack.set_stack({name = selection_tool, quality = quality})
   local label = storage.translations[player.index][selection_tool]
   cursor_stack.label = label and label or module
-  storage.players_last_module[player.index] = module
+  storage.players_last_module[player.index] = {name = module, quality = quality}
 
   ModuleGui.create(player)  -- Refresh module GUI highlights
 end

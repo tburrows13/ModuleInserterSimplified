@@ -22,8 +22,6 @@ function ModuleGui.create_module_table(player, player_data)
         local style = "slot_button"
         if player.cursor_stack and player.cursor_stack.valid_for_read and module.name == player.cursor_stack.name:sub(12) then
           style = "yellow_slot_button"
-        elseif not player_data.modules_enabled[module.name] then
-          style = "red_slot_button"
         end
         table.insert(module_table.children, {
           type = "sprite-button",
@@ -31,12 +29,40 @@ function ModuleGui.create_module_table(player, player_data)
           name = module.name,
           sprite = "item/mis-insert-" .. module.name,
           tooltip = { "", "\n\n[font=default-semibold]", module.localised_name, "[/font]\n", {"mis-gui.module-tooltip"} },
-          tags = { name = module.name },
           handler = { [defines.events.on_gui_click] = ModuleGui.module_clicked },
         })
       else
         table.insert(module_table.children, { type = "empty-widget" })
       end
+    end
+  end
+  return module_table
+end
+
+function ModuleGui.create_quality_table(player, player_data)
+  local quality_prototypes = prototypes.quality
+  local column_count = #quality_prototypes
+
+  local module_table = {
+    type = "table",
+    column_count = column_count,
+    style = "filter_slot_table",
+    children = {},
+  }
+  for name, quality in pairs(quality_prototypes) do
+    if name ~= "quality-unknown" then
+      local style = "slot_button"
+      if player.cursor_stack and player.cursor_stack.valid_for_read and name == player.cursor_stack.quality.name then
+        style = "yellow_slot_button"
+      end
+      table.insert(module_table.children, {
+        type = "sprite-button",
+        style = style,
+        name = name,
+        sprite = "quality/" .. name,
+        tooltip = { "", "\n\n[font=default-semibold]", quality.localised_name, "[/font]\n", {"mis-gui.module-tooltip"} },
+        handler = { [defines.events.on_gui_click] = ModuleGui.quality_clicked },
+      })
     end
   end
   return module_table
@@ -67,9 +93,16 @@ function ModuleGui.create(player)
             children = ModuleGui.create_module_table(player, player_data),
           },
           {
+            type = "frame",
+            style = "slot_button_deep_frame",
+            style_mods = {minimal_height = 5, minimal_width = 280, top_margin = 10},
+            visible = script.feature_flags.quality,
+            children = ModuleGui.create_quality_table(player, player_data),
+          },
+          {
             type = "label",
             caption = {"mis-gui.info"},
-            style_mods = {single_line = false, top_padding = 10},
+            style_mods = {single_line = false, top_margin = 10},
           },
         }
       }
@@ -102,13 +135,20 @@ end
 
 function ModuleGui.module_clicked(player, player_data, element, mouse_button)
   if mouse_button == defines.mouse_button_type.left then
-    CycleModule.set_cursor_module(player, element.name)
+    CycleModule.set_cursor_module(player, element.name, storage.players_last_module[player.index].quality)
   elseif mouse_button == defines.mouse_button_type.right then
     local module_enabled = not player_data.modules_enabled[element.name]
     player_data.modules_enabled[element.name] = module_enabled
     ModuleGui.create(player)  -- Refresh module GUI highlights
   end
 end
+
+function ModuleGui.quality_clicked(player, player_data, element, mouse_button)
+  if mouse_button == defines.mouse_button_type.left then
+    CycleModule.set_cursor_module(player, storage.players_last_module[player.index].name, element.name)
+  end
+end
+
 
 gui.add_handlers(ModuleGui,
   function(event, handler)
