@@ -19,6 +19,22 @@ data:extend{
   },
   {
     type = "custom-input",
+    name = "mis-cycle-quality-forwards",
+    key_sequence = "",
+    linked_game_control = "cycle-quality-up",
+    order = "b",
+    --consuming = "game-only",
+  },
+  {
+    type = "custom-input",
+    name = "mis-cycle-quality-backwards",
+    key_sequence = "",
+    linked_game_control = "cycle-quality-down",
+    order = "c",
+    --consuming = "game-only",
+  },
+  {
+    type = "custom-input",
     name = "mis-give-module-inserter",
     key_sequence = "ALT + M",
     localised_name = { "shortcut-name.mis-give-module-inserter" },

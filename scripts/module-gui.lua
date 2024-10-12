@@ -104,6 +104,12 @@ function ModuleGui.create(player)
             caption = {"mis-gui.info"},
             style_mods = {single_line = false, top_margin = 10},
           },
+          {
+            type = "label",
+            caption = {"mis-gui.info-quality"},
+            style_mods = {single_line = true, top_margin = 0, top_padding = 0, left_margin = -3, left_padding = 0},
+            visible = script.feature_flags.quality,
+          },
         }
       }
     }

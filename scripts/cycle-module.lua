@@ -47,6 +47,30 @@ local function cycle_module(player, direction)
   end
 end
 
+local function cycle_quality(player, direction)
+  local selection_tool = player.cursor_stack
+  if selection_tool and selection_tool.valid_for_read then
+    if selection_tool.name:sub(1, 10) == "mis-insert" then
+      local item = selection_tool.name:sub(12)
+      local quality = selection_tool.quality
+      local next_quality
+      if direction == 1 then
+        next_quality = quality.next and quality.next.name
+      else
+        for _, quality_prototype in pairs(prototypes.quality) do
+          if quality_prototype.next and quality_prototype.next.name == quality.name then
+            next_quality = quality_prototype.name
+            break
+          end
+        end
+      end
+      if next_quality then
+        CycleModule.set_cursor_module(player, item, next_quality)
+      end
+    end
+  end
+end
+
 local function on_lua_shortcut(event)
   if event.prototype_name and event.prototype_name ~= "mis-give-module-inserter" then return end
   local player = game.get_player(event.player_index)
@@ -95,6 +119,8 @@ end
 CycleModule.events = {
   ["mis-cycle-module-forwards"] = function(event) cycle_module(game.get_player(event.player_index), 1) end,
   ["mis-cycle-module-backwards"] = function(event) cycle_module(game.get_player(event.player_index), -1) end,
+  ["mis-cycle-quality-forwards"] = function(event) cycle_quality(game.get_player(event.player_index), 1) end,
+  ["mis-cycle-quality-backwards"] = function(event) cycle_quality(game.get_player(event.player_index), -1) end,
   [defines.events.on_lua_shortcut] = on_lua_shortcut,
   ["mis-give-module-inserter"] = on_lua_shortcut,
 }
