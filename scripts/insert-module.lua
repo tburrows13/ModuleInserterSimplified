@@ -64,6 +64,10 @@ local function insert_into_entities_in_area(target_module, area, player, surface
   local inventory = game.create_inventory(1)
   inventory.insert{name = "upgrade-planner"}
   local upgrade_planner = inventory[1]
+
+  if target_module == "remove-modules" then
+    target_module = nil
+  end
   for i, module in pairs(storage.modules) do
     if module.name ~= "remove-modules" then  -- "remove-modules" is a dummy item - don't add it. This index will handle empty module slots
       upgrade_planner.set_mapper(i, "from", {type = "item", name = module.name})
@@ -77,7 +81,6 @@ local function insert_into_entities_in_area(target_module, area, player, surface
     player = player,
     item = upgrade_planner,
   }
-  do return end
 end
 
 local function insert_single_into_entity(module, entity, player, surface, allowed_with_recipe)
