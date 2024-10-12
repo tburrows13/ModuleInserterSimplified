@@ -23,6 +23,7 @@ local function cycle_module(player, direction)
   if selection_tool and selection_tool.valid_for_read then
     if selection_tool.name:sub(1, 10) == "mis-insert" then
       local item = selection_tool.name:sub(12)
+      local quality = selection_tool.quality
       local modules = storage.modules
       local modules_length = #modules
       local first_index = storage.modules_by_name[item].index
@@ -39,7 +40,7 @@ local function cycle_module(player, direction)
 
       local next_module_name = next_module.name
 
-      CycleModule.set_cursor_module(player, next_module_name)
+      CycleModule.set_cursor_module(player, next_module_name, quality)
 
       control_conflict_warn(player)
     end
@@ -54,11 +55,13 @@ local function on_lua_shortcut(event)
   local next_quality = "normal"
   if cursor_stack and cursor_stack.valid_for_read then
     next_module = cursor_stack.name  -- Get selection tool from currently held module
+    next_quality = cursor_stack.quality.name
   end
   if not next_module then
     local cursor_ghost = player.cursor_ghost
     if cursor_ghost then
       next_module = cursor_ghost.name
+      next_quality = cursor_ghost.quality.name
     end
   end
   local cleared = player.clear_cursor()
