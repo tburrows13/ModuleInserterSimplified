@@ -10,6 +10,5 @@ data:extend({
     category = "module-inserter-simplified",
     order = "a",
     is_title = true,
-    trigger = { type = "dependencies-met" },
   },
 })
