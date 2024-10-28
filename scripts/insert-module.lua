@@ -40,11 +40,12 @@ local function insert_single_into_entities(target_module, quality, entities, pla
     local correct_modules_in_inventory = 0
     local requests
 
+    if entity.type == "tile-ghost" then goto continue end  -- Bug workaround: https://forums.factorio.com/118072
+
     if entity.type == "entity-ghost" then
       inventory_size = entity.ghost_prototype.module_inventory_size
       if inventory_size == 0 then goto continue end
       requests = convert_item_requests(entity.item_requests or {})
-
     else
       -- Entity is not ghost
       local module_inventory = entity.get_module_inventory()
