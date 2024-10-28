@@ -3,6 +3,7 @@ Config = {}
 function Config.process_technology(technology, player_index, old_modules_enabled)
   old_modules_enabled = old_modules_enabled or {}
   local player_data = storage.player_data[player_index]
+  if not player_data then return end  -- on_research_finished can be raised before on_init
   local modules_enabled = player_data.modules_enabled
 
   for _, effect in pairs(technology.prototype.effects) do
