@@ -4,10 +4,16 @@ local mod_gui = require("__core__.lualib.mod-gui")
 local ModuleGui = {}
 
 function ModuleGui.create_module_table(player, player_data)
+  -- Display each tier in its own row, but if there are
+  -- too many modules in a tier then wrap it to another line.
   local column_count = 0
+  local column_limit = 24  -- max window width
+
+  -- Column count is the widest tier, limited to the maximum width.
   for _, tier_list in pairs(storage.modules_by_tier) do
     column_count = math.max(column_count, #tier_list)
   end
+  column_count = math.min(column_count, column_limit)
 
   local module_table = {
     type = "table",
@@ -16,24 +22,27 @@ function ModuleGui.create_module_table(player, player_data)
     children = {},
   }
   for _, tier_list in pairs(storage.modules_by_tier) do
-    for i = 1, column_count do
-      local module = tier_list[i]
-      if module then
-        local style = "slot_button"
-        if player.cursor_stack and player.cursor_stack.valid_for_read and module.name == player.cursor_stack.name:sub(12) then
-          style = "yellow_slot_button"
-        end
-        table.insert(module_table.children, {
-          type = "sprite-button",
-          style = style,
-          name = module.name,
-          sprite = "item/mis-insert-" .. module.name,
-          tooltip = { "", "\n\n[font=default-semibold]", module.localised_name, "[/font]\n", {"mis-gui.module-tooltip"} },
-          handler = { [defines.events.on_gui_click] = ModuleGui.module_clicked },
-        })
-      else
-        table.insert(module_table.children, { type = "empty-widget" })
+    -- Insert a button for each module in the tier.
+    for _, module in pairs(tier_list) do
+      local style = "slot_button"
+      if player.cursor_stack and player.cursor_stack.valid_for_read and module.name == player.cursor_stack.name:sub(12) then
+        style = "yellow_slot_button"
       end
+      table.insert(module_table.children, {
+        type = "sprite-button",
+        style = style,
+        name = module.name,
+        sprite = "item/mis-insert-" .. module.name,
+        tooltip = { "", "\n\n[font=default-semibold]", module.localised_name, "[/font]\n", {"mis-gui.module-tooltip"} },
+        handler = { [defines.events.on_gui_click] = ModuleGui.module_clicked },
+      })
+    end
+
+    -- Insert empty buttons after the tier to fill the row to column_count.
+    local inserted = #tier_list
+    while (inserted % column_count ~= 0) do
+      inserted = inserted + 1
+      table.insert(module_table.children, { type = "empty-widget" })
     end
   end
   return module_table
